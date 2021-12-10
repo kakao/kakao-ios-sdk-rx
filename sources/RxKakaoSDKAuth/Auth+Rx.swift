@@ -60,7 +60,7 @@ extension Reactive where Base: Auth {
                                 
                                 if AUTH.tokenManager.getToken()?.refreshToken != nil {
                                     SdkLog.e("request token refresh. \n\n")
-                                    return AuthApi.shared.rx.refreshAccessToken().asObservable()
+                                    return AuthApi.shared.rx.refreshToken().asObservable()
                                 }
                                 else {
                                     SdkLog.e("\(logString)\n token is nil -> pass through next\n\n")

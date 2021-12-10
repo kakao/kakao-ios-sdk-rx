@@ -115,10 +115,12 @@ extension Reactive where Base: TalkApi {
     /// - seealso: `Friends`
     public func friends(offset: Int? = nil,
                         limit: Int? = nil,
-                        order: Order? = nil) -> Single<Friends<Friend>> {
+                        order: Order? = nil,
+                        friendOrder: FriendOrder? = nil) -> Single<Friends<Friend>> {
         return AUTH.rx.responseData(.get, Urls.compose(path:Paths.friends), parameters: ["offset": offset,
-                                                                  "limit": limit,
-                                                                  "order": order?.rawValue].filterNil())
+                                                                                         "limit": limit,
+                                                                                         "order": order?.rawValue,
+                                                                                         "friend_order": friendOrder?.rawValue].filterNil())
             .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
             .map({ (response, data) -> (SdkJSONDecoder, HTTPURLResponse, Data) in
                 return (SdkJSONDecoder.custom, response, data)

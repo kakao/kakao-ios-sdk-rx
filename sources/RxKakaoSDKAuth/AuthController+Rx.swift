@@ -121,12 +121,14 @@ extension Reactive where Base: AuthController {
     /// :nodoc: 카카오싱크 전용입니다. 자세한 내용은 카카오싱크 전용 개발가이드를 참고하시기 바랍니다.
     public func authorizeWithAuthenticationSession(prompts : [Prompt]? = nil,
                                                    channelPublicIds: [String]? = nil,
-                                                   serviceTerms: [String]? = nil) -> Observable<OAuthToken> {
+                                                   serviceTerms: [String]? = nil,
+                                                   loginHint: String? = nil) -> Observable<OAuthToken> {
         return self.authorizeWithAuthenticationSession(prompts: prompts,
                                                        agtToken: nil,
                                                        scopes: nil,
                                                        channelPublicIds: channelPublicIds,
-                                                       serviceTerms:serviceTerms)
+                                                       serviceTerms:serviceTerms,
+                                                       loginHint: loginHint)
     }
     
     
@@ -166,6 +168,7 @@ extension Reactive where Base: AuthController {
                                             scopes:[String]? = nil,
                                             channelPublicIds: [String]? = nil,
                                             serviceTerms: [String]? = nil,
+                                            loginHint: String? = nil,
                                             accountParameters: [String:String]? = nil) -> Observable<OAuthToken> {
         return Observable<String>.create { observer in
             let authenticationSessionCompletionHandler : (URL?, Error?) -> Void = {
@@ -205,7 +208,8 @@ extension Reactive where Base: AuthController {
                                                             agtToken: agtToken,
                                                             scopes: scopes,
                                                             channelPublicIds: channelPublicIds,
-                                                            serviceTerms: serviceTerms)
+                                                            serviceTerms: serviceTerms,
+                                                            loginHint: loginHint)
             
             var url: URL? = nil
             if let accountParameters = accountParameters, !accountParameters.isEmpty {
@@ -313,7 +317,8 @@ extension Reactive where Base: AuthController {
                                                        agtToken: String? = nil,
                                                        scopes:[String]? = nil,
                                                        channelPublicIds: [String]? = nil,
-                                                       serviceTerms: [String]? = nil) -> Observable<CertTokenInfo> {
+                                                       serviceTerms: [String]? = nil,
+                                                       loginHint: String? = nil) -> Observable<CertTokenInfo> {
         return Observable<String>.create { observer in
             let authenticationSessionCompletionHandler : (URL?, Error?) -> Void = {
                 (callbackUrl:URL?, error:Error?) in
@@ -358,7 +363,8 @@ extension Reactive where Base: AuthController {
                                                             agtToken: agtToken,
                                                             scopes: scopes,
                                                             channelPublicIds: channelPublicIds,
-                                                            serviceTerms: serviceTerms)
+                                                            serviceTerms: serviceTerms,
+                                                            loginHint: loginHint)
             
             if let url = SdkUtils.makeUrlWithParameters(Urls.compose(.Kauth, path:Paths.authAuthorize), parameters:parameters) {
                 SdkLog.d("\n===================================================================================================")

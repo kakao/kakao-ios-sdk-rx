@@ -79,12 +79,12 @@ extension Reactive where Base: AuthApi {
     }
     
     /// 기존 토큰을 갱신합니다.
-    public func refreshAccessToken(refreshToken: String? = nil) -> Single<OAuthToken> {
+    public func refreshToken(token oldToken: OAuthToken? = nil) -> Single<OAuthToken> {
         return API.rx.responseData(.post,
                                 Urls.compose(.Kauth, path:Paths.authToken),
                                 parameters: ["grant_type":"refresh_token",
                                              "client_id":try! KakaoSDK.shared.appKey(),
-                                             "refresh_token":refreshToken ?? AUTH.tokenManager.getToken()?.refreshToken,
+                                             "refresh_token":oldToken?.refreshToken ?? AUTH.tokenManager.getToken()?.refreshToken,
                                              "ios_bundle_id":Bundle.main.bundleIdentifier].filterNil(),
                                 sessionType:.RxAuthApi)
             .compose(API.rx.checkKAuthErrorComposeTransformer())
@@ -92,7 +92,7 @@ extension Reactive where Base: AuthApi {
                 let newToken = try SdkJSONDecoder.custom.decode(Token.self, from: data)
                 
                 //oauthtoken 객체가 없으면 에러가 나야함.
-                guard let oldOAuthToken = AUTH.tokenManager.getToken() else { throw SdkError(reason: .TokenNotFound) }
+                guard let oldOAuthToken = oldToken ?? AUTH.tokenManager.getToken() else { throw SdkError(reason: .TokenNotFound) }
                 
                 var newRefreshToken: String {
                     if let refreshToken = newToken.refreshToken {
@@ -130,5 +130,11 @@ extension Reactive where Base: AuthApi {
             .do(onSuccess: { (oauthToken) in
                 AUTH.tokenManager.setToken(oauthToken)
             })
+    }
+    
+    
+    @available(*, deprecated, message: "use refreshToken(token:) instead")
+    public func refreshAccessToken(refreshToken: String? = nil) -> Single<OAuthToken> {
+        return Observable.empty().asSingle()
     }
 }
