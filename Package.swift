@@ -36,7 +36,7 @@ let package = Package(
     ],
     dependencies: [
         .package(name: "KakaoOpenSDK",
-                 url: "https://github.com/kakao/kakao-ios-sdk.git", .branch("master")),
+                 url: "https://github.com/kakao/kakao-ios-sdk.git", .branch("develop")),
         
         .package(name: "RxAlamofire",
                   url: "https://github.com/RxSwiftCommunity/RxAlamofire.git",
