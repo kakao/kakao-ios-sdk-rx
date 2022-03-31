@@ -5,19 +5,16 @@ RxSwift를 사용하는 카카오링크 모듈입니다.
 ## Requirements
 - Xcode 11.0
 - iOS 11.0
-- Swift 4.2
+- Swift 5.0
 - CocoaPods 1.8.0
 
 ## Dependencies
-- RxSwift ?
-- RxCocoa ?
-- RxAlamofire ?
-- DynamicCodable ?
+- KakaoSDKLink
+- RxKakaoSDKCommon
 
 ## Installation
 ```
 pod 'RxKakaoSDKLink'
-pod 'RxKakaoSDKCommon'
 ```
 
 ## Import

@@ -1,24 +1,20 @@
 # RxKakaoSDKUser
 
-RxSwift를 사용하는 사용자관리 모듈입니다. 로그인 기반 API이므로 RxKakaoSDKAuth 모듈을 이용한 로그인 과정이 필요합니다.
+RxSwift를 사용하는 카카오 로그인 및 사용자 관리 API 모듈입니다. 로그인 기반 API를 제공하므로 `RxKakaoSDKAuth` 모듈에 의존합니다.
 
 ## Requirements
 - Xcode 11.0
 - iOS 11.0
-- Swift 4.2
+- Swift 5.0
 - CocoaPods 1.8.0
 
 ## Dependencies
-- RxSwift ?
-- RxCocoa ?
-- RxAlamofire ?
-- DynamicCodable ?
+- KakaoSDKUser
+- RxKakaoSDKAuth
 
 ## Installation
 ```
 pod 'RxKakaoSDKUser'
-pod 'RxKakaoSDKAuth'
-pod 'RxKakaoSDKCommon'
 ```
 
 ## Import
