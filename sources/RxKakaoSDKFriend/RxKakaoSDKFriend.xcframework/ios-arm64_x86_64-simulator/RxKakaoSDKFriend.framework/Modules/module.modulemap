@@ -1,0 +1,11 @@
+framework module RxKakaoSDKFriend {
+  umbrella header "RxKakaoSDKFriend.h"
+
+  export *
+  module * { export * }
+}
+
+module RxKakaoSDKFriend.Swift {
+    header "RxKakaoSDKFriend-Swift.h"
+    requires objc
+}
