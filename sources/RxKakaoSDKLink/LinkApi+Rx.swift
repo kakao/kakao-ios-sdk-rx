@@ -32,7 +32,7 @@ extension Reactive where Base: LinkApi {
     
     // MARK: Fields
     
-    /// 템플릿 조회 API 응답을 카카오링크 URL로 변환합니다.
+    /// 템플릿 조회 API 응답을 카카오톡 공유 URL로 변환합니다.
     /// - seealso: `LinkResult`
     public func createLinkResultComposeTransformer(targetAppKey:String? = nil) -> ComposeTransformer<(ValidationResult, [String:Any]?), LinkResult> {
         return ComposeTransformer<(ValidationResult, [String:Any]?), LinkResult> { (observable) in
@@ -166,7 +166,7 @@ extension Reactive where Base: LinkApi {
  
     // MARK: Image Upload
     
-    /// 카카오링크 컨텐츠 이미지로 활용하기 위해 로컬 이미지를 카카오 이미지 서버로 업로드 합니다.
+    /// 카카오톡 공유 컨텐츠 이미지로 활용하기 위해 로컬 이미지를 카카오 이미지 서버로 업로드 합니다.
     public func imageUpload(image: UIImage, secureResource: Bool = true) -> Single<ImageUploadResult> {
         return API.rx.upload(.post, Urls.compose(path:Paths.imageUploadLink),
                           images: [image],
@@ -181,7 +181,7 @@ extension Reactive where Base: LinkApi {
             .asSingle()
     }
     
-    /// 카카오링크 컨텐츠 이미지로 활용하기 위해 원격 이미지를 카카오 이미지 서버로 스크랩 합니다.
+    /// 카카오톡 공유 컨텐츠 이미지로 활용하기 위해 원격 이미지를 카카오 이미지 서버로 스크랩 합니다.
     public func imageScrap(imageUrl: URL, secureResource: Bool = true) -> Single<ImageUploadResult> {
         return API.rx.responseData(.post, Urls.compose(path:Paths.imageScrapLink),
                                 parameters: ["image_url": imageUrl.absoluteString, "secure_resource": secureResource],
