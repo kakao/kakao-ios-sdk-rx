@@ -14,12 +14,12 @@
 
 #import <UIKit/UIKit.h>
 
-//! Project version number for RxKakaoSDKLink.
-FOUNDATION_EXPORT double RxKakaoSDKLinkVersionNumber;
+//! Project version number for RxKakaoSDKShare.
+FOUNDATION_EXPORT double RxKakaoSDKShareVersionNumber;
 
-//! Project version string for RxKakaoSDKLink.
-FOUNDATION_EXPORT const unsigned char RxKakaoSDKLinkVersionString[];
+//! Project version string for RxKakaoSDKShare.
+FOUNDATION_EXPORT const unsigned char RxKakaoSDKShareVersionString[];
 
-// In this header, you should import all the public headers of your framework using statements like #import <RxKakaoSDKLink/PublicHeader.h>
+// In this header, you should import all the public headers of your framework using statements like #import <RxKakaoSDKShare/PublicHeader.h>
 
 
