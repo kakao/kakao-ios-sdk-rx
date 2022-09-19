@@ -38,7 +38,18 @@ final public class RxKakaoSDK {
     ///   - customScheme: 로그인 시 인증코드를 발급 받을 URI. 내 앱의 커스텀 스킴에 로그인 요청임을 구분할 수 있는 host 및 path를 덧붙여 사용합니다. ex) myappscheme://oauth
     ///   - loggingEnable: SDK에서 디버그 로깅를 사용 여부
     
-    public static func initSDK(appKey: String, customScheme: String? = nil, loggingEnable: Bool = false, hosts: Hosts? = nil) {
-        KakaoSDK.shared.initialize(appKey: appKey, customScheme: customScheme, loggingEnable: loggingEnable, hosts: hosts, sdkType:.RxSwift)
+    public static func initSDK(appKey: String,
+                               customScheme: String? = nil,
+                               loggingEnable: Bool = false,
+                               hosts: Hosts? = nil,
+                               approvalType: ApprovalType? = nil,
+                               sdkIdentifier: SdkIdentifier? = nil) {
+        KakaoSDK.shared.initialize(appKey: appKey,
+                                   customScheme: customScheme,
+                                   loggingEnable: loggingEnable,
+                                   hosts: hosts,
+                                   approvalType: approvalType,
+                                   sdkIdentifier: sdkIdentifier,
+                                   sdkType:.RxSwift)
     }
 }

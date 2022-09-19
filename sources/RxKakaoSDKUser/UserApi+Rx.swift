@@ -267,9 +267,9 @@ extension Reactive where Base: UserApi {
     
     /// 앱에 가입한 사용자의 배송지 정보를 얻을 수 있습니다.
     /// - seealso: `UserShippingAddresses`
-    public func shippingAddresses(fromUpdatedAt: Int? = nil, pageSize: Int? = nil) -> Single<UserShippingAddresses> {
+    public func shippingAddresses(fromUpdatedAt: Date? = nil, pageSize: Int? = nil) -> Single<UserShippingAddresses> {
         return AUTH.rx.responseData(.get, Urls.compose(path:Paths.userShippingAddress),
-                                 parameters: ["from_updated_at": fromUpdatedAt, "page_size": pageSize].filterNil())
+                                    parameters: ["from_updated_at": fromUpdatedAt?.toSeconds(), "page_size": pageSize].filterNil())
             .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
             .map({ (response, data) -> (SdkJSONDecoder, HTTPURLResponse, Data) in
                 return (SdkJSONDecoder.customSecondsSince1970, response, data)
