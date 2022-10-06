@@ -102,19 +102,19 @@ extension Reactive where Base: AuthController {
     
     // MARK: Login with Web Cookie
     
-    ///:nodoc: 카카오 계정 페이지에서 로그인을 하기 위한 지원스펙 입니다.
-    public func authorizeWithAuthenticationSession(accountParameters: [String:String]? = nil) -> Observable<OAuthToken>  {
-        return self.authorizeWithAuthenticationSession(agtToken: nil,
-                                                       scopes: nil,
-                                                       channelPublicIds: nil,
-                                                       serviceTerms:nil,
-                                                       accountParameters: accountParameters)
-    }
+//    ///:nodoc: 카카오 계정 페이지에서 로그인을 하기 위한 지원스펙 입니다.
+//    public func authorizeWithAuthenticationSession(accountParameters: [String:String]? = nil) -> Observable<OAuthToken>  {
+//        return _authorizeWithAuthenticationSession(agtToken: nil,
+//                                                       scopes: nil,
+//                                                       channelPublicIds: nil,
+//                                                       serviceTerms:nil,
+//                                                       accountParameters: accountParameters)
+//    }
     
     /// :nodoc:
     public func authorizeWithAuthenticationSession(prompts : [Prompt]? = nil,
                                                    nonce: String? = nil) -> Observable<OAuthToken> {
-        return self.authorizeWithAuthenticationSession(prompts: prompts,
+        return _authorizeWithAuthenticationSession(prompts: prompts,
                                                        agtToken: nil,
                                                        scopes: nil,
                                                        channelPublicIds: nil,
@@ -128,7 +128,7 @@ extension Reactive where Base: AuthController {
                                                    serviceTerms: [String]? = nil,
                                                    loginHint: String? = nil,
                                                    nonce: String? = nil) -> Observable<OAuthToken> {
-        return self.authorizeWithAuthenticationSession(prompts: prompts,
+        return _authorizeWithAuthenticationSession(prompts: prompts,
                                                        agtToken: nil,
                                                        scopes: nil,
                                                        channelPublicIds: channelPublicIds,
@@ -142,7 +142,7 @@ extension Reactive where Base: AuthController {
     /// :nodoc:
     public func authorizeWithAuthenticationSession(scopes:[String], nonce: String? = nil) -> Observable<OAuthToken> {
         return AuthApi.shared.rx.agt().asObservable().flatMap({ agtToken -> Observable<OAuthToken> in
-            return self.authorizeWithAuthenticationSession(agtToken: agtToken, scopes: scopes).flatMap({ oauthToken in
+            return _authorizeWithAuthenticationSession(agtToken: agtToken, scopes: scopes).flatMap({ oauthToken in
                 return Observable<OAuthToken>.create { observer in
                     if let topVC = UIApplication.getMostTopViewController() {
                         let topVCName = "\(type(of: topVC))"
@@ -169,14 +169,16 @@ extension Reactive where Base: AuthController {
     }
   
     /// :nodoc:
-    func authorizeWithAuthenticationSession(prompts : [Prompt]? = nil,
-                                            agtToken: String? = nil,
-                                            scopes:[String]? = nil,
-                                            channelPublicIds: [String]? = nil,
-                                            serviceTerms: [String]? = nil,
-                                            loginHint: String? = nil,
-                                            accountParameters: [String:String]? = nil,
-                                            nonce: String? = nil) -> Observable<OAuthToken> {
+    public func _authorizeWithAuthenticationSession(prompts : [Prompt]? = nil,
+                                                    agtToken: String? = nil,
+                                                    scopes:[String]? = nil,
+                                                    channelPublicIds: [String]? = nil,
+                                                    serviceTerms: [String]? = nil,
+                                                    loginHint: String? = nil,
+                                                    accountParameters: [String:String]? = nil,
+                                                    nonce: String? = nil,
+                                                    accountsSkipIntro: Bool? = nil,
+                                                    accountsTalkLoginVisible: Bool? = nil) -> Observable<OAuthToken> {
         return Observable<String>.create { observer in
             let authenticationSessionCompletionHandler : (URL?, Error?) -> Void = {
                 (callbackUrl:URL?, error:Error?) in
@@ -217,7 +219,9 @@ extension Reactive where Base: AuthController {
                                                             channelPublicIds: channelPublicIds,
                                                             serviceTerms: serviceTerms,
                                                             loginHint: loginHint,
-                                                            nonce: nonce)
+                                                            nonce: nonce,
+                                                            accountsSkipIntro: accountsSkipIntro,
+                                                            accountsTalkLoginVisible: accountsTalkLoginVisible)
             
             var url: URL? = nil
             if let accountParameters = accountParameters, !accountParameters.isEmpty {
