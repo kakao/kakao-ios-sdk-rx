@@ -34,7 +34,8 @@ extension Reactive where Base: AuthController {
     // MARK: Login with KakaoTalk
     
     /// :nodoc:
-    public func authorizeWithTalk(channelPublicIds: [String]? = nil,
+    public func authorizeWithTalk(launchMethod: LaunchMethod? = nil,
+                                  channelPublicIds: [String]? = nil,
                                   serviceTerms: [String]? = nil,
                                   nonce: String? = nil) -> Observable<OAuthToken> {
         return Observable<String>.create { observer in
@@ -53,8 +54,10 @@ extension Reactive where Base: AuthController {
                                                                    serviceTerms:serviceTerms,
                                                                    nonce: nonce)
 
-            guard let url = SdkUtils.makeUrlWithParameters(Urls.compose(.TalkAuth, path:Paths.authTalk), parameters: parameters) else {
-                SdkLog.e("Bad Parameter.")
+            guard let url = SdkUtils.makeUrlWithParameters(url:Urls.compose(.TalkAuth, path:Paths.authTalk),
+                                                           parameters: parameters,
+                                                           launchMethod: launchMethod) else {
+                SdkLog.e("Bad Parameter - make URL error")
                 observer.onError(SdkError(reason: .BadParameter))
                 return Disposables.create()
             }
@@ -272,7 +275,8 @@ extension Reactive where Base: AuthController {
 extension Reactive where Base: AuthController {
     
     /// :nodoc:
-    public func certAuthorizeWithTalk(prompts : [Prompt]? = nil,
+    public func certAuthorizeWithTalk(launchMethod: LaunchMethod? = nil,
+                                      prompts : [Prompt]? = nil,
                                       state: String? = nil,
                                       channelPublicIds: [String]? = nil,
                                       serviceTerms: [String]? = nil,
@@ -300,7 +304,9 @@ extension Reactive where Base: AuthController {
                                                                    serviceTerms: serviceTerms,
                                                                    nonce: nonce)
 
-            guard let url = SdkUtils.makeUrlWithParameters(Urls.compose(.TalkAuth, path:Paths.authTalk), parameters: parameters) else {
+            guard let url = SdkUtils.makeUrlWithParameters(url:Urls.compose(.TalkAuth, path:Paths.authTalk),
+                                                           parameters: parameters,
+                                                           launchMethod: launchMethod) else {
                 SdkLog.e("Bad Parameter.")
                 observer.onError(SdkError(reason: .BadParameter))
                 return Disposables.create()

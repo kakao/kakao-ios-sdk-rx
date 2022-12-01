@@ -81,28 +81,37 @@ extension Reactive where Base: UserApi {
     // MARK: Login with KakaoTalk
     
     /// 카카오톡 간편로그인을 실행합니다.
-    /// - note: UserApi.isKakaoTalkLoginAvailable() 메소드로 실행 가능한 상태인지 확인이 필요합니다. 카카오톡을 실행할 수 없을 경우 loginWithKakaoAccount() 메소드로 웹 로그인을 시도할 수 있습니다.
-    public func loginWithKakaoTalk(channelPublicIds: [String]? = nil,
+    /// - note: UserApi.isKakaoTalkLoginAvailable() 메소드로 실행 가능 여부 확인이 필요합니다. 카카오톡을 실행할 수 없을 경우 loginWithKakaoAccount() 메소드로 웹 로그인을 시도할 수 있습니다.
+    /// - note: launchMethod가 .UniversalLink 일 경우 카카오톡 실행 가능 여부 확인은 필수가 아닙니다.
+    /// - parameters:
+    ///   - launchMethod 카카오톡 간편로그인 앱 전환 방식 선택  { CustomScheme(Default), .UniversalLink }
+    ///   - nonce ID 토큰 재생 공격 방지를 위한 검증 값, 임의의 문자열, ID 토큰 검증 시 사용
+    public func loginWithKakaoTalk(launchMethod: LaunchMethod? = nil,
+                                   channelPublicIds: [String]? = nil,
                                    serviceTerms: [String]? = nil,
                                    nonce: String? = nil) -> Observable<OAuthToken> {
         
-        return AuthController.shared.rx.authorizeWithTalk(channelPublicIds: channelPublicIds,
+        return AuthController.shared.rx.authorizeWithTalk(launchMethod: launchMethod,
+                                                          channelPublicIds: channelPublicIds,
                                                           serviceTerms: serviceTerms,
-                                                          nonce: nonce)
-        
+                                                          nonce: nonce)        
     }
     
     /// 보안로그인용 카카오톡 간편로그인을 실행합니다.
+    /// - note: launchMethod가 .UniversalLink 일 경우 카카오톡 실행가능 상태체크는 필수가 아닙니다.
     /// - parameters:
+    ///   - launchMethod 카카오톡 간편로그인 앱 전환 방식 선택  { CustomScheme(Default), .UniversalLink }
     ///   - prompts 동의 화면 요청 시 추가 상호작용을 요청하고자 할 때 전달. [Prompt]
-    ///   - state
-    
-    public func certLoginWithKakaoTalk(prompts: [Prompt]? = nil,
+    ///   - state 전자서명 원문
+    ///   - nonce ID 토큰 재생 공격 방지를 위한 검증 값, 임의의 문자열, ID 토큰 검증 시 사용
+    public func certLoginWithKakaoTalk(launchMethod: LaunchMethod? = nil,
+                                       prompts: [Prompt]? = nil,
                                        state: String? = nil,
                                        channelPublicIds: [String]? = nil,
                                        serviceTerms: [String]? = nil,
                                        nonce: String? = nil) -> Observable<CertTokenInfo> {
-        return AuthController.shared.rx.certAuthorizeWithTalk(prompts:prompts,
+        return AuthController.shared.rx.certAuthorizeWithTalk(launchMethod: launchMethod,
+                                                              prompts:prompts,
                                                               state:state,
                                                               channelPublicIds: channelPublicIds,
                                                               serviceTerms: serviceTerms,
