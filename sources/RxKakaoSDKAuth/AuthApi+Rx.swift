@@ -32,7 +32,7 @@ extension Reactive where Base: AuthApi {
         return API.rx.responseData(.post, Urls.compose(.Kauth, path:Paths.authAgt),
                                 parameters: ["client_id":try! KakaoSDK.shared.appKey(),
                                              "access_token":AUTH.tokenManager.getToken()?.accessToken].filterNil(),
-                                sessionType:.RxAuthApi)
+                                sessionType:.Auth)
             .compose(API.rx.checkKAuthErrorComposeTransformer())
             .map({ (response, data) -> String? in
                 if let json = (try? JSONSerialization.jsonObject(with:data, options:[])) as? [String: Any] {
@@ -62,7 +62,7 @@ extension Reactive where Base: AuthApi {
                                              "code":code,
                                              "code_verifier":codeVerifier,
                                              "ios_bundle_id":Bundle.main.bundleIdentifier].filterNil(),
-                                sessionType:.RxAuthApi)
+                                sessionType:.Auth)
             .compose(API.rx.checkKAuthErrorComposeTransformer())
             .map({ (response, data) -> OAuthToken in
                 return try SdkJSONDecoder.custom.decode(OAuthToken.self, from: data)
@@ -86,7 +86,7 @@ extension Reactive where Base: AuthApi {
                                              "client_id":try! KakaoSDK.shared.appKey(),
                                              "refresh_token":oldToken?.refreshToken ?? AUTH.tokenManager.getToken()?.refreshToken,
                                              "ios_bundle_id":Bundle.main.bundleIdentifier].filterNil(),
-                                sessionType:.RxAuthApi)
+                                sessionType:.Auth)
             .compose(API.rx.checkKAuthErrorComposeTransformer())
             .map({ (response, data) -> OAuthToken in
                 let newToken = try SdkJSONDecoder.custom.decode(Token.self, from: data)
