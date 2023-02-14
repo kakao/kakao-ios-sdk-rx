@@ -20,11 +20,10 @@ import Alamofire
 import RxAlamofire
 import KakaoSDKCommon
 
-
-//Rx extension Api
-
+/// :nodoc:
 extension Api: ReactiveCompatible {}
 
+/// :nodoc:
 extension Reactive where Base: Api {
     public func decodeDataComposeTransformer<T:Codable>() -> ComposeTransformer<(SdkJSONDecoder, HTTPURLResponse, Data), T> {
         return ComposeTransformer<(SdkJSONDecoder, HTTPURLResponse, Data), T> { (observable) in

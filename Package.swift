@@ -1,7 +1,7 @@
 // swift-tools-version:5.3
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
-// sdk-version:2.13.1
+// sdk-version:2.14.0
 import PackageDescription
 
 let package = Package(
@@ -16,9 +16,6 @@ let package = Package(
         .library(
             name: "RxKakaoSDKCommon",
             targets: ["RxKakaoSDKCommon"]),
-        .library(
-            name: "RxKakaoSDKCommonCore",
-            targets: ["RxKakaoSDKCommonCore"]),
         .library(
             name: "RxKakaoSDKAuth",
             targets: ["RxKakaoSDKAuth"]),
@@ -38,7 +35,7 @@ let package = Package(
     dependencies: [
         .package(name: "KakaoOpenSDK",
                  url: "https://github.com/kakao/kakao-ios-sdk.git",
-                 .exact("2.13.1")
+                 .exact("2.14.0")
                 ),
         
         .package(name: "RxAlamofire",
@@ -53,19 +50,12 @@ let package = Package(
         .target(
             name: "RxKakaoSDKCommon",
             dependencies: [
+                .product(name: "RxSwift", package: "RxSwift"),
+                .product(name: "RxCocoa", package: "RxSwift"),
                 .product(name: "RxAlamofire", package: "RxAlamofire"),
                 .product(name: "KakaoSDKCommon", package: "KakaoOpenSDK")
             ],
             exclude: ["Info.plist", "README.md"]
-        ),
-        .target(
-            name: "RxKakaoSDKCommonCore",
-            dependencies: [
-                .product(name: "KakaoSDKCommonCore", package: "KakaoOpenSDK"),
-                .product(name: "RxSwift", package: "RxSwift"),
-                .product(name: "RxCocoa", package: "RxSwift")
-            ],
-            path: "sources/RxKakaoSDKCommon/Common"
         ),
         .target(
             name: "RxKakaoSDKAuth",

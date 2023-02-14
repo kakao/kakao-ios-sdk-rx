@@ -23,11 +23,13 @@ import RxKakaoSDKCommon
 
 import KakaoSDKAuth
 
-extension Auth: ReactiveCompatible {}
+/// :nodoc:
+@available(iOSApplicationExtension, unavailable)
+extension AuthApiCommon: ReactiveCompatible {}
 
 /// :nodoc: 내부 Rx전용 extension 입니다.
-extension Reactive where Base: Auth {
-        
+@available(iOSApplicationExtension, unavailable)
+extension Reactive where Base: AuthApiCommon {        
     public func checkErrorAndRetryComposeTransformer() -> ComposeTransformer<(HTTPURLResponse, Data), (HTTPURLResponse, Data)> {
         return ComposeTransformer<(HTTPURLResponse, Data), (HTTPURLResponse, Data)> { (observable) in
             return observable

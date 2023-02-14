@@ -33,7 +33,7 @@ extension StoryApi: ReactiveCompatible {}
 /// 아래는 story/profile을 호출하는 간단한 예제입니다.
 ///
 ///     StoryApi.shared.rx.profile()
-///        .retryWhen(Auth.shared.rx.incrementalAuthorizationRequired())
+///        .retryWhen(AuthApiCommon.shared.rx.incrementalAuthorizationRequired())
 ///        .subscribe(onSuccess:{ (profile) in
 ///            print(profile)
 ///        }, onError: { (error) in
@@ -49,8 +49,8 @@ extension Reactive where Base: StoryApi {
 
     /// 사용자가 카카오스토리 사용자인지 아닌지를 판별합니다.
     public func isStoryUser() -> Single<Bool> {
-        return AUTH.rx.responseData(.get, Urls.compose(path:Paths.isStoryUser))
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+        return AUTH_API.rx.responseData(.get, Urls.compose(path:Paths.isStoryUser))
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .map({ (response, data) -> Bool in
                 if let json = (try? JSONSerialization.jsonObject(with:data, options:[])) as? [String: Any] {
                     if let isStoryUser = json["isStoryUser"] as? Bool {
@@ -75,9 +75,9 @@ extension Reactive where Base: StoryApi {
     /// 로그인된 사용자의 카카오스토리 프로필 정보를 얻을 수 있습니다.
     /// - seealso: `StoryProfile`
     public func profile(secureResource: Bool = true) -> Single<StoryProfile> {
-        return AUTH.rx.responseData(.get, Urls.compose(path:Paths.storyProfile),
+        return AUTH_API.rx.responseData(.get, Urls.compose(path:Paths.storyProfile),
                                  parameters: ["secure_resource":secureResource].filterNil())
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .map({ (response, data) -> (SdkJSONDecoder, HTTPURLResponse, Data) in
                 return (SdkJSONDecoder.custom, response, data)
             })
@@ -88,9 +88,9 @@ extension Reactive where Base: StoryApi {
     /// 카카오스토리의 특정 내스토리 정보를 얻을 수 있습니다. comments, likes등의 상세정보도 포함됩니다.
     /// - seealso: `Story`
     public func story(id:String) -> Single<Story> {
-        return AUTH.rx.responseData(.get, Urls.compose(path:Paths.myStory),
+        return AUTH_API.rx.responseData(.get, Urls.compose(path:Paths.myStory),
                                  parameters: ["id":id].filterNil())
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .map({ (response, data) -> (SdkJSONDecoder, HTTPURLResponse, Data) in
                 return (SdkJSONDecoder.customIso8601Date, response, data)
             })
@@ -101,9 +101,9 @@ extension Reactive where Base: StoryApi {
     /// 카카오스토리의 여러 개의 내스토리 정보들을 얻을 수 있습니다. 단, comments, likes등의 상세정보는 없으며 이는 내스토리 정보 요청 `story(id:)`을 통해 얻을 수 있습니다.
     /// - seealso: `Story`
     public func stories(lastId:String? = nil) -> Single<[Story]?> {
-        return AUTH.rx.responseData(.get, Urls.compose(path:Paths.myStories),
+        return AUTH_API.rx.responseData(.get, Urls.compose(path:Paths.myStories),
                                  parameters: ["last_id":lastId].filterNil())
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .map({ (response, data) -> (SdkJSONDecoder, HTTPURLResponse, Data) in
                 return (SdkJSONDecoder.customIso8601Date, response, data)
             })
@@ -114,9 +114,9 @@ extension Reactive where Base: StoryApi {
     /// 포스팅하고자 하는 URL을 스크랩하여 링크 정보를 생성합니다.
     /// - seealso: `LinkInfo`
     public func linkInfo(url: URL) -> Single<LinkInfo> {
-        return AUTH.rx.responseData(.get, Urls.compose(path:Paths.storyLinkInfo),
+        return AUTH_API.rx.responseData(.get, Urls.compose(path:Paths.storyLinkInfo),
                                  parameters: ["url":url].filterNil())
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .map({ (response, data) -> (SdkJSONDecoder, HTTPURLResponse, Data) in
                 return (SdkJSONDecoder.custom, response, data)
             })
@@ -132,7 +132,7 @@ extension Reactive where Base: StoryApi {
                          iosExecParam: [String: String]? = nil,
                          androidMarketParam: [String: String]? = nil,
                          iosMarketParam: [String: String]? = nil) -> Single<String> {
-        return AUTH.rx.responseData(.post, Urls.compose(path:Paths.postNote),
+        return AUTH_API.rx.responseData(.post, Urls.compose(path:Paths.postNote),
                                  parameters: ["content":content,
                                               "permission":permission.parameterValue,
                                               "enable_share":enableShare,
@@ -140,7 +140,7 @@ extension Reactive where Base: StoryApi {
                                               "ios_exec_param":iosExecParam?.queryParameters,
                                               "android_market_param":androidMarketParam?.queryParameters,
                                               "ios_market_param":iosMarketParam?.queryParameters].filterNil())
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .map({ (response, data) -> String in
                 if 200 ..< 300 ~= response.statusCode {
                     if let json = (try? JSONSerialization.jsonObject(with: data, options: [])) as? [String: Any], let postId = json["id"] as? String {
@@ -173,7 +173,7 @@ extension Reactive where Base: StoryApi {
                          androidMarketParam: [String: String]? = nil,
                          iosMarketParam: [String: String]? = nil) -> Single<String> {
         
-        return AUTH.rx.responseData(.post, Urls.compose(path:Paths.postLink),
+        return AUTH_API.rx.responseData(.post, Urls.compose(path:Paths.postLink),
                                  parameters: ["content":content,
                                               "link_info":SdkUtils.toJsonString(linkInfo),
                                               "permission":permission.parameterValue,
@@ -182,7 +182,7 @@ extension Reactive where Base: StoryApi {
                                               "ios_exec_param":iosExecParam?.queryParameters,
                                               "android_market_param":androidMarketParam?.queryParameters,
                                               "ios_market_param":iosMarketParam?.queryParameters].filterNil())
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .map({ (response, data) -> String in
                 if 200 ..< 300 ~= response.statusCode {
                     if let json = (try? JSONSerialization.jsonObject(with: data, options: [])) as? [String: Any], let postId = json["id"] as? String {
@@ -211,7 +211,7 @@ extension Reactive where Base: StoryApi {
                           iosExecParam: [String: String]? = nil,
                           androidMarketParam: [String: String]? = nil,
                           iosMarketParam: [String: String]? = nil) -> Single<String> {
-        return AUTH.rx.responseData(.post, Urls.compose(path:Paths.postPhoto),
+        return AUTH_API.rx.responseData(.post, Urls.compose(path:Paths.postPhoto),
                                  parameters: ["content":content,
                                               "image_url_list":imagePaths.toJsonString(),
                                               "permission":permission.parameterValue,
@@ -220,7 +220,7 @@ extension Reactive where Base: StoryApi {
                                               "ios_exec_param":iosExecParam?.queryParameters,
                                               "android_market_param":androidMarketParam?.queryParameters,
                                               "ios_market_param":iosMarketParam?.queryParameters].filterNil())
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .map({ (response, data) -> String in
                 if 200 ..< 300 ~= response.statusCode {
                     if let json = (try? JSONSerialization.jsonObject(with: data, options: [])) as? [String: Any], let postId = json["id"] as? String {
@@ -242,8 +242,8 @@ extension Reactive where Base: StoryApi {
     
     /// 로컬 이미지 파일 여러장을 카카오스토리에 업로드합니다. (JPEG 형식)
     public func upload(_ images: [UIImage?]) -> Single<[String]?> {
-        return AUTH.rx.upload(.post, Urls.compose(path:Paths.uploadMulti), images: images)
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+        return AUTH_API.rx.upload(.post, Urls.compose(path:Paths.uploadMulti), images: images)
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .map({ (response, data) -> [String]? in
                 return (try? JSONSerialization.jsonObject(with:data, options:[])) as? [String]
             })
@@ -257,9 +257,9 @@ extension Reactive where Base: StoryApi {
     
     /// 카카오스토리의 특정 내스토리 정보를 지울 수 있습니다.
     public func delete(_ id: String) -> Completable {
-        return AUTH.rx.responseData(.delete, Urls.compose(path:Paths.deleteMyStory),
+        return AUTH_API.rx.responseData(.delete, Urls.compose(path:Paths.deleteMyStory),
                                  parameters: ["id":id].filterNil())
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .do (
                 onNext: { _ in
                     SdkLog.i("completable:\n success\n\n" )

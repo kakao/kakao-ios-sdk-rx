@@ -186,8 +186,8 @@ extension Reactive where Base: UserApi {
     
     /// 앱 연결 상태가 **PREREGISTER** 상태의 사용자에 대하여 앱 연결 요청을 합니다. **자동연결** 설정을 비활성화한 앱에서 사용합니다. 요청에 성공하면 회원번호가 반환됩니다.
     public func signup(properties: [String:String]? = nil) -> Single<Int64?> {
-        return AUTH.rx.responseData(.post, Urls.compose(path:Paths.signup), parameters:["properties": properties?.toJsonString()].filterNil())
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+        return AUTH_API.rx.responseData(.post, Urls.compose(path:Paths.signup), parameters:["properties": properties?.toJsonString()].filterNil())
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .map({ (response, data) -> Int64? in
                 if let json = (try? JSONSerialization.jsonObject(with:data, options:[])) as? [String: Any] {
                     return json["id"] as? Int64
@@ -208,9 +208,9 @@ extension Reactive where Base: UserApi {
     /// - seealso: `User`
     public func me(propertyKeys: [String]? = nil,
                    secureResource: Bool = true) -> Single<User> {        
-        return AUTH.rx.responseData(.get, Urls.compose(path:Paths.userMe),
+        return AUTH_API.rx.responseData(.get, Urls.compose(path:Paths.userMe),
                                     parameters: ["property_keys": propertyKeys?.toJsonString(), "secure_resource": secureResource].filterNil())
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .map({ (response, data) -> (SdkJSONDecoder, HTTPURLResponse, Data) in
                 return (SdkJSONDecoder.customIso8601Date, response, data)
             })
@@ -224,9 +224,9 @@ extension Reactive where Base: UserApi {
     /// 새로운 컬럼을 추가하면 해당 키 이름으로 값을 저장할 수 있습니다.
     /// - seealso: `User.properties`
     public func updateProfile(properties: [String:Any]) -> Completable {
-        return AUTH.rx.responseData(.post, Urls.compose(path:Paths.userUpdateProfile),
+        return AUTH_API.rx.responseData(.post, Urls.compose(path:Paths.userUpdateProfile),
                                  parameters: ["properties": properties.toJsonString()].filterNil())
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .do (
                 onNext: { _ in
                     SdkLog.i("completable:\n success\n\n" )
@@ -239,8 +239,8 @@ extension Reactive where Base: UserApi {
     /// 현재 토큰의 기본적인 정보를 조회합니다. me()에서 제공되는 다양한 사용자 정보 없이 가볍게 토큰의 유효성을 체크하는 용도로 사용하는 경우 추천합니다.
     /// - seealso: `AccessTokenInfo`
     public func accessTokenInfo() -> Single<AccessTokenInfo> {
-        return AUTH.rx.responseData(.get, Urls.compose(path:Paths.userAccessTokenInfo))
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+        return AUTH_API.rx.responseData(.get, Urls.compose(path:Paths.userAccessTokenInfo))
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .map({ (response, data) -> (SdkJSONDecoder, HTTPURLResponse, Data) in
                 return (SdkJSONDecoder.custom, response, data)
             })
@@ -250,8 +250,8 @@ extension Reactive where Base: UserApi {
     
     /// 토큰을 강제로 만료시킵니다. 같은 사용자가 여러개의 토큰을 발급 받은 경우 로그아웃 요청에 사용된 토큰만 만료됩니다.
     public func logout() -> Completable {
-        return AUTH.rx.responseData(.post, Urls.compose(path:Paths.userLogout))
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+        return AUTH_API.rx.responseData(.post, Urls.compose(path:Paths.userLogout))
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .ignoreElements()
             .asCompletable()
             .do(onError: { (_) in
@@ -265,8 +265,8 @@ extension Reactive where Base: UserApi {
     
     /// 카카오 플랫폼 서비스와 앱 연결을 해제합니다.
     public func unlink() -> Completable {
-        return AUTH.rx.responseData(.post, Urls.compose(path:Paths.userUnlink))
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+        return AUTH_API.rx.responseData(.post, Urls.compose(path:Paths.userUnlink))
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .ignoreElements()
             .asCompletable()
             .do(onCompleted: {
@@ -277,9 +277,9 @@ extension Reactive where Base: UserApi {
     /// 앱에 가입한 사용자의 배송지 정보를 얻을 수 있습니다.
     /// - seealso: `UserShippingAddresses`
     public func shippingAddresses(fromUpdatedAt: Date? = nil, pageSize: Int? = nil) -> Single<UserShippingAddresses> {
-        return AUTH.rx.responseData(.get, Urls.compose(path:Paths.userShippingAddress),
+        return AUTH_API.rx.responseData(.get, Urls.compose(path:Paths.userShippingAddress),
                                     parameters: ["from_updated_at": fromUpdatedAt?.toSeconds(), "page_size": pageSize].filterNil())
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .map({ (response, data) -> (SdkJSONDecoder, HTTPURLResponse, Data) in
                 return (SdkJSONDecoder.customSecondsSince1970, response, data)
             })
@@ -290,9 +290,9 @@ extension Reactive where Base: UserApi {
     /// 앱에 가입한 사용자의 배송지 정보를 얻을 수 있습니다.
     /// - seealso: `UserShippingAddresses`
     public func shippingAddresses(addressId: Int64) -> Single<UserShippingAddresses> {
-        return AUTH.rx.responseData(.get, Urls.compose(path:Paths.userShippingAddress),
+        return AUTH_API.rx.responseData(.get, Urls.compose(path:Paths.userShippingAddress),
                                  parameters: ["address_id": addressId].filterNil())
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .map({ (response, data) -> (SdkJSONDecoder, HTTPURLResponse, Data) in
                 return (SdkJSONDecoder.customSecondsSince1970, response, data)
             })
@@ -303,9 +303,9 @@ extension Reactive where Base: UserApi {
     /// 사용자가 카카오 간편가입을 통해 동의한 서비스 약관 내역을 반환합니다.
     /// - seealso: `UserServiceTerms`
     public func serviceTerms(extra:String? = nil) -> Single<UserServiceTerms> {
-        return AUTH.rx.responseData(.get, Urls.compose(path:Paths.userServiceTerms),
+        return AUTH_API.rx.responseData(.get, Urls.compose(path:Paths.userServiceTerms),
                                     parameters: ["extra": extra].filterNil())
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .map({ (response, data) -> (SdkJSONDecoder, HTTPURLResponse, Data) in
                 return (SdkJSONDecoder.customIso8601Date, response, data)
             })
@@ -318,8 +318,8 @@ extension Reactive where Base: UserApi {
     /// - parameters:
     ///   - scopes 추가할 동의 항목 ID 목록 (옵셔널)
     public func scopes(scopes:[String]? = nil) -> Single<ScopeInfo> {
-        return AUTH.rx.responseData(.get, Urls.compose(path:Paths.userScopes), parameters: ["scopes":scopes?.toJsonString()].filterNil())
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+        return AUTH_API.rx.responseData(.get, Urls.compose(path:Paths.userScopes), parameters: ["scopes":scopes?.toJsonString()].filterNil())
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .map({ (response, data) -> (SdkJSONDecoder, HTTPURLResponse, Data) in
                 return (SdkJSONDecoder.custom, response, data)
             })
@@ -332,8 +332,8 @@ extension Reactive where Base: UserApi {
     /// - parameters:
     ///   - scopes 추가할 동의 항목 ID 목록
     public func revokeScopes(scopes:[String]) -> Single<ScopeInfo> {
-        return AUTH.rx.responseData(.post, Urls.compose(path:Paths.userRevokeScopes), parameters: ["scopes":scopes.toJsonString()].filterNil())
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+        return AUTH_API.rx.responseData(.post, Urls.compose(path:Paths.userRevokeScopes), parameters: ["scopes":scopes.toJsonString()].filterNil())
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .map({ (response, data) -> (SdkJSONDecoder, HTTPURLResponse, Data) in
                 return (SdkJSONDecoder.custom, response, data)
             })

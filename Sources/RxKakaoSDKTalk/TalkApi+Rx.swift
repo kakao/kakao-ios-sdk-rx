@@ -33,7 +33,7 @@ extension TalkApi: ReactiveCompatible {}
 /// 아래는 talk/profile을 호출하는 간단한 예제입니다.
 ///
 ///     TalkApi.shared.rx.profile()
-///        .retryWhen(Auth.shared.rx.incrementalAuthorizationRequired())
+///        .retryWhen(AuthApiCommon.shared.rx.incrementalAuthorizationRequired())
 ///        .subscribe(onSuccess:{ (profile) in
 ///            print(profile)
 ///        }, onError: { (error) in
@@ -47,8 +47,8 @@ extension Reactive where Base: TalkApi {
     /// 로그인된 사용자의 카카오톡 프로필 정보를 얻을 수 있습니다.
     /// - seealso: `TalkProfile`
     public func profile() -> Single<TalkProfile> {
-        return AUTH.rx.responseData(.get, Urls.compose(path:Paths.talkProfile))
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+        return AUTH_API.rx.responseData(.get, Urls.compose(path:Paths.talkProfile))
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .map({ (response, data) -> (SdkJSONDecoder, HTTPURLResponse, Data) in
                 return (SdkJSONDecoder.custom, response, data)
             })
@@ -64,8 +64,8 @@ extension Reactive where Base: TalkApi {
 
     /// 카카오 디벨로퍼스에서 생성한 서비스만의 커스텀 메시지 템플릿을 사용하여, 카카오톡의 "나와의 채팅방"으로 메시지를 전송합니다. 템플릿을 생성하는 방법은 https://developers.kakao.com/docs/latest/ko/message/ios#create-message 을 참고하시기 바랍니다.
     public func sendCustomMemo(templateId: Int64, templateArgs: [String:String]? = nil) -> Completable {
-        return AUTH.rx.responseData(.post, Urls.compose(path:Paths.customMemo), parameters: ["template_id":templateId, "template_args":templateArgs?.toJsonString()].filterNil())
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+        return AUTH_API.rx.responseData(.post, Urls.compose(path:Paths.customMemo), parameters: ["template_id":templateId, "template_args":templateArgs?.toJsonString()].filterNil())
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .do (
                 onNext: { _ in
                     SdkLog.i("completable:\n success\n\n" )
@@ -78,8 +78,8 @@ extension Reactive where Base: TalkApi {
     /// 기본 템플릿을 이용하여, 카카오톡의 "나와의 채팅방"으로 메시지를 전송합니다.
     /// - seealso: [Template](../../KakaoSDKTemplate/Protocols/Templatable.html)
     public func sendDefaultMemo(templatable: Templatable) -> Completable {
-        return AUTH.rx.responseData(.post, Urls.compose(path:Paths.defaultMemo), parameters: ["template_object":templatable.toJsonObject()?.toJsonString()].filterNil())
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+        return AUTH_API.rx.responseData(.post, Urls.compose(path:Paths.defaultMemo), parameters: ["template_object":templatable.toJsonObject()?.toJsonString()].filterNil())
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .do (
                 onNext: { _ in
                     SdkLog.i("completable:\n success\n\n" )
@@ -97,8 +97,8 @@ extension Reactive where Base: TalkApi {
 
     /// 지정된 URL을 스크랩하여, 카카오톡의 "나와의 채팅방"으로 메시지를 전송합니다.
     public func sendScrapMemo(requestUrl: String, templateId: Int64? = nil, templateArgs: [String:String]? = nil) -> Completable {
-        return AUTH.rx.responseData(.post, Urls.compose(path:Paths.scrapMemo), parameters: ["request_url":requestUrl,"template_id":templateId, "template_args":templateArgs?.toJsonString()].filterNil())
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+        return AUTH_API.rx.responseData(.post, Urls.compose(path:Paths.scrapMemo), parameters: ["request_url":requestUrl,"template_id":templateId, "template_args":templateArgs?.toJsonString()].filterNil())
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .do (
                 onNext: { _ in
                     SdkLog.i("completable:\n success\n\n" )
@@ -117,11 +117,11 @@ extension Reactive where Base: TalkApi {
                         limit: Int? = nil,
                         order: Order? = nil,
                         friendOrder: FriendOrder? = nil) -> Single<Friends<Friend>> {
-        return AUTH.rx.responseData(.get, Urls.compose(path:Paths.friends), parameters: ["offset": offset,
+        return AUTH_API.rx.responseData(.get, Urls.compose(path:Paths.friends), parameters: ["offset": offset,
                                                                                          "limit": limit,
                                                                                          "order": order?.rawValue,
                                                                                          "friend_order": friendOrder?.rawValue].filterNil())
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .map({ (response, data) -> (SdkJSONDecoder, HTTPURLResponse, Data) in
                 return (SdkJSONDecoder.custom, response, data)
             })
@@ -135,10 +135,10 @@ extension Reactive where Base: TalkApi {
     /// 기본 템플릿을 사용하여, 조회한 친구를 대상으로 카카오톡으로 메시지를 전송합니다.
     /// - seealso: [Template](../../KakaoSDKTemplate/Protocols/Templatable.html) <br> `MessageSendResult`
     public func sendDefaultMessage(templatable:Templatable, receiverUuids:[String]) -> Single<MessageSendResult> {
-        return AUTH.rx.responseData(.post,
+        return AUTH_API.rx.responseData(.post,
                                  Urls.compose(path:Paths.defaultMessage),
                                  parameters: ["template_object":templatable.toJsonObject()?.toJsonString(), "receiver_uuids":receiverUuids.toJsonString()].filterNil())
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .map({ (response, data) -> (SdkJSONDecoder, HTTPURLResponse, Data) in
                 return (SdkJSONDecoder.custom, response, data)
             })
@@ -158,8 +158,8 @@ extension Reactive where Base: TalkApi {
     /// 카카오 디벨로퍼스에서 생성한 메시지 템플릿을 사용하여, 조회한 친구를 대상으로 카카오톡으로 메시지를 전송합니다. 템플릿을 생성하는 방법은 https://developers.kakao.com/docs/latest/ko/message/ios#create-message 을 참고하시기 바랍니다.
     /// - seealso: `MessageSendResult`
     public func sendCustomMessage(templateId: Int64, templateArgs:[String:String]? = nil, receiverUuids:[String]) -> Single<MessageSendResult> {
-        return AUTH.rx.responseData(.post, Urls.compose(path:Paths.customMessage), parameters: ["receiver_uuids":receiverUuids.toJsonString(), "template_id":templateId, "template_args":templateArgs?.toJsonString()].filterNil())
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+        return AUTH_API.rx.responseData(.post, Urls.compose(path:Paths.customMessage), parameters: ["receiver_uuids":receiverUuids.toJsonString(), "template_id":templateId, "template_args":templateArgs?.toJsonString()].filterNil())
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .map({ (response, data) -> (SdkJSONDecoder, HTTPURLResponse, Data) in
                 return (SdkJSONDecoder.custom, response, data)
             })
@@ -170,9 +170,9 @@ extension Reactive where Base: TalkApi {
     /// 지정된 URL을 스크랩하여, 조회한 친구를 대상으로 카카오톡으로 메시지를 전송합니다. 스크랩 커스텀 템플릿 가이드(https://developers.kakao.com/docs/latest/ko/message/ios#send-kakaotalk-msg) 를  참고하여 템플릿을 직접 만들고 스크랩 메시지 전송에 이용할 수도 있습니다.
     /// - seealso: `MessageSendResult`
     public func sendScrapMessage(requestUrl: String, templateId: Int64? = nil, templateArgs:[String:String]? = nil, receiverUuids:[String]) -> Single<MessageSendResult> {
-        return AUTH.rx.responseData(.post, Urls.compose(path:Paths.scrapMessage),
+        return AUTH_API.rx.responseData(.post, Urls.compose(path:Paths.scrapMessage),
                                         parameters: ["receiver_uuids":receiverUuids.toJsonString(), "request_url": requestUrl, "template_id":templateId, "template_args":templateArgs?.toJsonString()].filterNil())
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .map({ (response, data) -> (SdkJSONDecoder, HTTPURLResponse, Data) in
                 return (SdkJSONDecoder.custom, response, data)
             })
@@ -186,9 +186,9 @@ extension Reactive where Base: TalkApi {
     /// 사용자가 특정 카카오톡 채널을 추가했는지 확인합니다.
     /// - seealso: `Channel`
     public func channels(publicIds: [String]? = nil) -> Single<Channels> {
-        return AUTH.rx.responseData(.get, Urls.compose(path:Paths.channels),
+        return AUTH_API.rx.responseData(.get, Urls.compose(path:Paths.channels),
                                     parameters: ["channel_public_ids":publicIds?.toJsonString()].filterNil())
-            .compose(AUTH.rx.checkErrorAndRetryComposeTransformer())
+            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
             .map({ (response, data) -> (SdkJSONDecoder, HTTPURLResponse, Data) in
                 return (SdkJSONDecoder.customIso8601Date, response, data)
             })

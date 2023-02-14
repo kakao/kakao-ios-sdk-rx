@@ -139,3 +139,59 @@ extension Reactive where Base: AuthApi {
         return Observable.empty().asSingle()
     }
 }
+
+
+extension Reactive where Base: AuthApi {
+    /// 사용자 인증코드를 이용하여 신규 토큰 발급을 요청합니다.
+    public func certToken(code: String,
+                          codeVerifier: String? = nil,
+                          redirectUri: String = KakaoSDK.shared.redirectUri()) -> Single<CertTokenInfo> {
+        return API.rx.responseData(.post,
+                                Urls.compose(.Kauth, path:Paths.authToken),
+                                parameters: ["grant_type":"authorization_code",
+                                             "client_id":try! KakaoSDK.shared.appKey(),
+                                             "redirect_uri":redirectUri,
+                                             "code":code,
+                                             "code_verifier":codeVerifier,
+                                             "ios_bundle_id":Bundle.main.bundleIdentifier].filterNil(),
+                                sessionType:.RxAuthApi)
+            .compose(API.rx.checkKAuthErrorComposeTransformer())
+            .map({ (response, data) -> CertTokenInfo in
+                if let certOauthToken = try? SdkJSONDecoder.custom.decode(CertOAuthToken.self, from: data) {
+                    let oauthToken = OAuthToken(accessToken: certOauthToken.accessToken,
+                                                expiresIn: certOauthToken.expiresIn,
+                                                expiredAt: certOauthToken.expiredAt,
+                                                tokenType: certOauthToken.tokenType,
+                                                refreshToken: certOauthToken.refreshToken,
+                                                refreshTokenExpiresIn: certOauthToken.refreshTokenExpiresIn,
+                                                refreshTokenExpiredAt: certOauthToken.refreshTokenExpiredAt,
+                                                scope: certOauthToken.scope,
+                                                scopes: certOauthToken.scopes,
+                                                idToken: certOauthToken.idToken)
+                    
+                    
+                    if let txId = certOauthToken.txId {
+                        let certTokenInfo = CertTokenInfo(token: oauthToken, txId: txId)
+                        return certTokenInfo
+                    }
+                    else {
+                        throw SdkError(reason: .Unknown, message: "certToken - txId is nil.")
+                    }
+                }
+                else {
+                    throw SdkError(reason: .Unknown, message: "certToken - token parsing error.")
+                }
+                
+            })
+            .do (
+                onNext: { ( decoded) in
+                    SdkLog.i("decoded model:\n \(String(describing: decoded))\n\n" )
+                }
+            )
+            .asSingle()
+            .do(onSuccess: { (certTokenInfo ) in
+                AUTH.tokenManager.setToken(certTokenInfo.token)
+            })
+    }
+    
+}
