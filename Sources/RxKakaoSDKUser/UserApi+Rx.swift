@@ -74,9 +74,11 @@ extension UserApi: ReactiveCompatible {}
 ///            print(error)
 ///        })
 ///        .disposed(by: <#Your DisposeBag#>)
+///
+///
+
+// MARK: Login APIs
 extension Reactive where Base: UserApi {
-    
-    // MARK: API Methods
     
     // MARK: Login with KakaoTalk
     
@@ -85,37 +87,18 @@ extension Reactive where Base: UserApi {
     /// - note: launchMethod가 .UniversalLink 일 경우 카카오톡 실행 가능 여부 확인은 필수가 아닙니다.
     /// - parameters:
     ///   - launchMethod 카카오톡 간편로그인 앱 전환 방식 선택  { CustomScheme(Default), .UniversalLink }
-    ///   - nonce ID 토큰 재생 공격 방지를 위한 검증 값, 임의의 문자열, ID 토큰 검증 시 사용
+    ///   - state 카카오 로그인 과정 중 동일한 값을 유지하는 임의의 문자열(정해진 형식 없음)
+    ///   - nonce ID 토큰 재생 공격을 방지하기 위해, ID 토큰 검증 시 사용할 임의의 문자열(정해진 형식 없음)
     public func loginWithKakaoTalk(launchMethod: LaunchMethod? = nil,
                                    channelPublicIds: [String]? = nil,
                                    serviceTerms: [String]? = nil,
+                                   state: String? = nil,
                                    nonce: String? = nil) -> Observable<OAuthToken> {
         
-        return AuthController.shared.rx.authorizeWithTalk(launchMethod: launchMethod,
-                                                          channelPublicIds: channelPublicIds,
-                                                          serviceTerms: serviceTerms,
-                                                          nonce: nonce)        
-    }
-    
-    /// 보안로그인용 카카오톡 간편로그인을 실행합니다.
-    /// - note: launchMethod가 .UniversalLink 일 경우 카카오톡 실행가능 상태체크는 필수가 아닙니다.
-    /// - parameters:
-    ///   - launchMethod 카카오톡 간편로그인 앱 전환 방식 선택  { CustomScheme(Default), .UniversalLink }
-    ///   - prompts 동의 화면 요청 시 추가 상호작용을 요청하고자 할 때 전달. [Prompt]
-    ///   - state 전자서명 원문
-    ///   - nonce ID 토큰 재생 공격 방지를 위한 검증 값, 임의의 문자열, ID 토큰 검증 시 사용
-    public func certLoginWithKakaoTalk(launchMethod: LaunchMethod? = nil,
-                                       prompts: [Prompt]? = nil,
-                                       state: String? = nil,
-                                       channelPublicIds: [String]? = nil,
-                                       serviceTerms: [String]? = nil,
-                                       nonce: String? = nil) -> Observable<CertTokenInfo> {
-        return AuthController.shared.rx.certAuthorizeWithTalk(launchMethod: launchMethod,
-                                                              prompts:prompts,
-                                                              state:state,
-                                                              channelPublicIds: channelPublicIds,
-                                                              serviceTerms: serviceTerms,
-                                                              nonce: nonce)
+        return AuthController.shared.rx._authorizeWithTalk(launchMethod: launchMethod,
+                                                           channelPublicIds: channelPublicIds,
+                                                           serviceTerms: serviceTerms,
+                                                           nonce: nonce)
     }
     
     // MARK: Login with Kakao Account
@@ -124,30 +107,16 @@ extension Reactive where Base: UserApi {
     /// - parameters:
     ///   - prompts 동의 화면 요청 시 추가 상호작용을 요청하고자 할 때 전달. [Prompt]
     ///   - loginHint 카카오계정 로그인 페이지의 ID에 자동 입력할 이메일 또는 전화번호
-    
+    ///   - state 카카오 로그인 과정 중 동일한 값을 유지하는 임의의 문자열(정해진 형식 없음)
+    ///   - nonce ID 토큰 재생 공격을 방지하기 위해, ID 토큰 검증 시 사용할 임의의 문자열(정해진 형식 없음)
     public func loginWithKakaoAccount(prompts : [Prompt]? = nil,
                                       loginHint: String? = nil,
+                                      state: String? = nil,
                                       nonce: String? = nil) -> Observable<OAuthToken> {
-        return AuthController.shared.rx.authorizeWithAuthenticationSession(prompts: prompts,
-                                                                           loginHint:loginHint,
-                                                                           nonce: nonce)
-    }
-    
-    /// 채널 메시지 방식 카카오톡 인증 로그인을 실행합니다.
-    /// 기본 브라우저의 카카오계정 쿠키(cookie)로 사용자 인증 후, 카카오계정에 연결된 카카오톡으로 카카오톡 인증 로그인을 요청하는 채널 메시지를 발송합니다.
-    /// 카카오톡의 채널 메시지를 통해 동의 및 전자서명을 거쳐 [CertTokenInfo]을 반환합니다.
-    /// - parameters:
-    ///   - prompts 동의 화면 요청 시 추가 상호작용을 요청하고자 할 때 전달, 사용할 수 있는 옵션의 종류는 [Prompt] 참고
-    ///   - state   전자서명 원문
-    ///   - loginHint 카카오계정 로그인 페이지의 ID에 자동 입력할 이메일 또는 전화번호
-    
-    public func certLoginWithKakaoAccount(prompts : [Prompt]? = nil,
-                                          state: String? = nil,
-                                          loginHint: String? = nil,
-                                          nonce: String? = nil) -> Observable<CertTokenInfo> {
-        return AuthController.shared.rx.certAuthorizeWithAuthenticationSession(prompts: prompts, state: state,
-                                                                               loginHint:loginHint,
-                                                                               nonce: nonce)
+        return AuthController.shared.rx._authorizeWithAuthenticationSession(prompts: prompts,
+                                                                            state:state,
+                                                                            loginHint:loginHint,
+                                                                            nonce: nonce)
     }
     
     // MARK: New Agreement
@@ -167,23 +136,76 @@ extension Reactive where Base: UserApi {
     ///
     /// ## 추가 항목 동의 받기 시 주의사항
     /// **선택 동의** 으로 설정된 동의항목에 대한 **추가 항목 동의 받기**는, 반드시 **사용자가 동의를 거부하더라도 서비스 이용이 지장이 없는** 시나리오에서 요청해야 합니다.
-    
-    public func loginWithKakaoAccount(scopes:[String], nonce: String? = nil) -> Observable<OAuthToken> {
-        return AuthController.shared.rx.authorizeWithAuthenticationSession(scopes:scopes, nonce:nonce)
+    public func loginWithKakaoAccount(scopes:[String],
+                                      state: String? = nil,
+                                      nonce: String? = nil) -> Observable<OAuthToken> {
+        return AuthController.shared.rx._authorizeByAgtWithAuthenticationSession(scopes:scopes, nonce:nonce)
     }
     
     /// :nodoc: 카카오싱크 전용입니다. 자세한 내용은 카카오싱크 전용 개발가이드를 참고하시기 바랍니다.
     public func loginWithKakaoAccount(prompts : [Prompt]? = nil,
                                       channelPublicIds: [String]? = nil,
                                       serviceTerms: [String]? = nil,
+                                      state: String? = nil,
                                       nonce: String? = nil) -> Observable<OAuthToken> {
         
-        return AuthController.shared.rx.authorizeWithAuthenticationSession(prompts: prompts,
-                                                                           channelPublicIds: channelPublicIds,
-                                                                           serviceTerms: serviceTerms,
-                                                                           nonce: nonce)
+        return AuthController.shared.rx._authorizeWithAuthenticationSession(prompts: prompts,
+                                                                            state:state,
+                                                                            channelPublicIds: channelPublicIds,
+                                                                            serviceTerms: serviceTerms,
+                                                                            nonce: nonce)
+    }
+  
+    // MARK: Cert Login
+
+    /// 보안로그인용 카카오톡 간편로그인을 실행합니다.
+    /// - note: launchMethod가 .UniversalLink 일 경우 카카오톡 실행가능 상태체크는 필수가 아닙니다.
+    /// - parameters:
+    ///   - launchMethod 카카오톡 간편로그인 앱 전환 방식 선택  { CustomScheme(Default), .UniversalLink }
+    ///   - prompts 동의 화면 요청 시 추가 상호작용을 요청하고자 할 때 전달. [Prompt]
+    ///   - state 카카오 로그인 과정 중 동일한 값을 유지하는 임의의 문자열(정해진 형식 없음)
+    ///   - nonce ID 토큰 재생 공격을 방지하기 위해, ID 토큰 검증 시 사용할 임의의 문자열(정해진 형식 없음)
+    ///   - settleId 정산 ID
+    public func certLoginWithKakaoTalk(launchMethod: LaunchMethod? = nil,
+                                       prompts: [Prompt]? = nil,
+                                       state: String? = nil,
+                                       channelPublicIds: [String]? = nil,
+                                       serviceTerms: [String]? = nil,
+                                       nonce: String? = nil,
+                                       settleId: String? = nil) -> Observable<CertTokenInfo> {
+        return AuthController.shared.rx._certAuthorizeWithTalk(launchMethod: launchMethod,
+                                                               prompts:prompts,
+                                                               state:state,
+                                                               channelPublicIds: channelPublicIds,
+                                                               serviceTerms: serviceTerms,
+                                                               nonce: nonce,
+                                                               settleId: settleId)
     }
     
+    /// 채널 메시지 방식 카카오톡 인증 로그인을 실행합니다.
+    /// 기본 브라우저의 카카오계정 쿠키(cookie)로 사용자 인증 후, 카카오계정에 연결된 카카오톡으로 카카오톡 인증 로그인을 요청하는 채널 메시지를 발송합니다.
+    /// 카카오톡의 채널 메시지를 통해 동의 및 전자서명을 거쳐 [CertTokenInfo]을 반환합니다.
+    /// - parameters:
+    ///   - prompts 동의 화면 요청 시 추가 상호작용을 요청하고자 할 때 전달, 사용할 수 있는 옵션의 종류는 [Prompt] 참고
+    ///   - loginHint 카카오계정 로그인 페이지의 ID에 자동 입력할 이메일 또는 전화번호
+    ///   - state 카카오 로그인 과정 중 동일한 값을 유지하는 임의의 문자열(정해진 형식 없음)
+    ///   - nonce ID 토큰 재생 공격을 방지하기 위해, ID 토큰 검증 시 사용할 임의의 문자열(정해진 형식 없음)
+    ///   - settleId 정산 ID
+    public func certLoginWithKakaoAccount(prompts : [Prompt]? = nil,
+                                          loginHint: String? = nil,
+                                          state: String? = nil,
+                                          nonce: String? = nil,
+                                          settleId: String? = nil) -> Observable<CertTokenInfo> {
+        return AuthController.shared.rx._certAuthorizeWithAuthenticationSession(prompts: prompts,
+                                                                                state: state,
+                                                                                loginHint:loginHint,
+                                                                                nonce: nonce,
+                                                                                settleId: settleId)
+    }
+}
+
+// MARK: Other APIs
+extension Reactive where Base: UserApi {
     /// 앱 연결 상태가 **PREREGISTER** 상태의 사용자에 대하여 앱 연결 요청을 합니다. **자동연결** 설정을 비활성화한 앱에서 사용합니다. 요청에 성공하면 회원번호가 반환됩니다.
     public func signup(properties: [String:String]? = nil) -> Single<Int64?> {
         return AUTH_API.rx.responseData(.post, Urls.compose(path:Paths.signup), parameters:["properties": properties?.toJsonString()].filterNil())
@@ -341,4 +363,3 @@ extension Reactive where Base: UserApi {
             .asSingle()
     }
 }
-

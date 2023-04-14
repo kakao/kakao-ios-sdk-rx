@@ -76,7 +76,8 @@ extension Reactive where Base: AuthApiCommon {
             }
     }
     
-    public func incrementalAuthorizationRequired() -> ((Observable<Error>) -> Observable<OAuthToken>) {
+    public func incrementalAuthorizationRequired(state: String? = nil,
+                                                 nonce: String? = nil) -> ((Observable<Error>) -> Observable<OAuthToken>) {
         
         return  {(observableError) -> Observable<OAuthToken> in
             return observableError.flatMap { (error) -> Observable<OAuthToken> in
@@ -89,7 +90,7 @@ extension Reactive where Base: AuthApiCommon {
                 switch(sdkError.getApiError().reason) {
                 case .InsufficientScope:
                     if let requiredScopes = sdkError.getApiError().info?.requiredScopes {
-                        return AuthController.shared.rx.authorizeWithAuthenticationSession(scopes:requiredScopes)
+                        return AuthController.shared.rx._authorizeByAgtWithAuthenticationSession(scopes:requiredScopes, state:state, nonce:nonce)
                     }
                     else {
                         throw sdkError // required_scopes 없는 경우 v1 처리 방식
