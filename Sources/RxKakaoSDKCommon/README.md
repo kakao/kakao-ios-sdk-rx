@@ -4,7 +4,7 @@ RxSwift를 사용하는 카카오 SDK 공통 모듈입니다. 초기화 메서�
 
 ## Requirements
 - Xcode 11.0
-- iOS 11.0
+- iOS 13.0
 - Swift 5.0
 - CocoaPods 1.8.0
 
