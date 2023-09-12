@@ -194,3 +194,34 @@ extension Reactive where Base: AuthApi {
     }
     
 }
+
+extension Reactive where Base: AuthApi {
+    /// :nodoc:
+    public func prepare(certType: CertType,
+                        txId: String? = nil,
+                        settleId: String? = nil,
+                        signData: String? = nil) -> Single<String?> {
+        return API.rx.responseData(.post,
+                                   Urls.compose(.Kauth, path: Paths.authPrepare),
+                                   parameters: [
+                                    "client_id": try! KakaoSDK.shared.appKey(),
+                                    "cert_type": certType.rawValue,
+                                    "tx_id":txId,
+                                    "settle_id": settleId,
+                                    "sign_data": signData                                    
+                                    ].filterNil(),
+                                   sessionType: .Auth)
+            .compose(API.rx.checkKAuthErrorComposeTransformer())
+            .map ({ (response, data) -> String? in
+                if let json = (try? JSONSerialization.jsonObject(with:data, options:[])) as? [String: Any] {
+                    return json["kauth_tx_id"] as? String
+                } else {
+                    throw SdkError(reason: .Unknown, message: "prepare - token parsing error.")
+                }
+            })
+            .asSingle()
+            .do { (decode) in
+                SdkLog.i("decoded model:\n \(String(describing: decode))\n\n")
+            }
+    }
+}
