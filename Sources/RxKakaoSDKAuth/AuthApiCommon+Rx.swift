@@ -22,11 +22,12 @@ import RxKakaoSDKCommon
 
 import KakaoSDKAuth
 
-/// :nodoc:
+@_documentation(visibility:private)
 @available(iOSApplicationExtension, unavailable)
 extension AuthApiCommon: ReactiveCompatible {}
 
-/// :nodoc: 내부 Rx전용 extension 입니다.
+@_documentation(visibility:private)
+/// 내부 Rx전용 extension 입니다.
 @available(iOSApplicationExtension, unavailable)
 extension Reactive where Base: AuthApiCommon {        
     public func checkErrorAndRetryComposeTransformer() -> ComposeTransformer<(HTTPURLResponse, Data), (HTTPURLResponse, Data)> {

@@ -26,7 +26,8 @@ extension Reactive where Base: AuthApi {
    
     // MARK: Methods
     
-    /// :nodoc: 추가 항목 동의 받기 요청시 인증값으로 사용되는 임시토큰 발급 요청입니다. SDK 내부 전용입니다.
+    @_documentation(visibility:private)
+    /// 추가 항목 동의 받기 요청시 인증값으로 사용되는 임시토큰 발급 요청입니다. SDK 내부 전용입니다.
     public func agt() -> Single<String?> {
         return API.rx.responseData(.post, Urls.compose(.Kauth, path:Paths.authAgt),
                                 parameters: ["client_id":try! KakaoSDK.shared.appKey(),
@@ -196,7 +197,7 @@ extension Reactive where Base: AuthApi {
 }
 
 extension Reactive where Base: AuthApi {
-    /// :nodoc:
+    @_documentation(visibility: private)
     public func prepare(certType: CertType,
                         txId: String? = nil,
                         settleId: String? = nil,

@@ -23,6 +23,7 @@ import RxKakaoSDKAuth
 
 import KakaoSDKTalk
 import KakaoSDKTemplate
+import UIKit
 
 extension TalkApi: ReactiveCompatible {}
 
@@ -43,7 +44,9 @@ extension Reactive where Base: TalkApi {
     // MARK: Profile
     
     /// 로그인된 사용자의 카카오톡 프로필 정보를 얻을 수 있습니다.
-    /// - seealso: `TalkProfile`
+    /// ## SeeAlso
+    /// - ``TalkProfile``
+    @_documentation(visibility:public)
     public func profile() -> Single<TalkProfile> {
         return AUTH_API.rx.responseData(.get, Urls.compose(path:Paths.talkProfile))
             .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
@@ -60,7 +63,7 @@ extension Reactive where Base: TalkApi {
     
     // MARK: Memo
 
-    /// 카카오 디벨로퍼스에서 생성한 서비스만의 커스텀 메시지 템플릿을 사용하여, 카카오톡의 "나와의 채팅방"으로 메시지를 전송합니다. 템플릿을 생성하는 방법은 https://developers.kakao.com/docs/latest/ko/message/ios#create-message 을 참고하시기 바랍니다.
+    /// 카카오 디벨로퍼스에서 생성한 서비스만의 커스텀 메시지 템플릿을 사용하여, 카카오톡의 "나와의 채팅방"으로 메시지를 전송합니다. 템플릿을 생성하는 방법은 [https://developers.kakao.com/docs/latest/ko/message/ios#create-message](https://developers.kakao.com/docs/latest/ko/message/ios#create-message) 을 참고하시기 바랍니다.
     public func sendCustomMemo(templateId: Int64, templateArgs: [String:String]? = nil) -> Completable {
         return AUTH_API.rx.responseData(.post, Urls.compose(path:Paths.customMemo), parameters: ["template_id":templateId, "template_args":templateArgs?.toJsonString()].filterNil())
             .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
@@ -74,7 +77,8 @@ extension Reactive where Base: TalkApi {
     }
 
     /// 기본 템플릿을 이용하여, 카카오톡의 "나와의 채팅방"으로 메시지를 전송합니다.
-    /// - seealso: [Template](../../KakaoSDKTemplate/Protocols/Templatable.html)
+    /// ## SeeAlso
+    /// - ``Templatable``
     public func sendDefaultMemo(templatable: Templatable) -> Completable {
         return AUTH_API.rx.responseData(.post, Urls.compose(path:Paths.defaultMemo), parameters: ["template_object":templatable.toJsonObject()?.toJsonString()].filterNil())
             .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
@@ -110,7 +114,8 @@ extension Reactive where Base: TalkApi {
     // MARK: Friends
     
     /// 카카오톡 친구 목록을 조회합니다.
-    /// - seealso: `Friends`
+    /// ## SeeAlso
+    /// - ``Friends``
     public func friends(offset: Int? = nil,
                         limit: Int? = nil,
                         order: Order? = nil,
@@ -131,7 +136,9 @@ extension Reactive where Base: TalkApi {
     // MARK: Message
     
     /// 기본 템플릿을 사용하여, 조회한 친구를 대상으로 카카오톡으로 메시지를 전송합니다.
-    /// - seealso: [Template](../../KakaoSDKTemplate/Protocols/Templatable.html) <br> `MessageSendResult`
+    /// ## SeeAlso
+    /// - ``Templatable``
+    /// - ``MessageSendResult``
     public func sendDefaultMessage(templatable:Templatable, receiverUuids:[String]) -> Single<MessageSendResult> {
         return AUTH_API.rx.responseData(.post,
                                  Urls.compose(path:Paths.defaultMessage),
@@ -153,8 +160,9 @@ extension Reactive where Base: TalkApi {
 //            .asSingle()
 //    }
     
-    /// 카카오 디벨로퍼스에서 생성한 메시지 템플릿을 사용하여, 조회한 친구를 대상으로 카카오톡으로 메시지를 전송합니다. 템플릿을 생성하는 방법은 https://developers.kakao.com/docs/latest/ko/message/ios#create-message 을 참고하시기 바랍니다.
-    /// - seealso: `MessageSendResult`
+    /// 카카오 디벨로퍼스에서 생성한 메시지 템플릿을 사용하여, 조회한 친구를 대상으로 카카오톡으로 메시지를 전송합니다. 템플릿을 생성하는 방법은 [https://developers.kakao.com/docs/latest/ko/message/ios#create-message](https://developers.kakao.com/docs/latest/ko/message/ios#create-message) 을 참고하시기 바랍니다.
+    /// ## SeeAlso
+    /// - ``MessageSendResult``
     public func sendCustomMessage(templateId: Int64, templateArgs:[String:String]? = nil, receiverUuids:[String]) -> Single<MessageSendResult> {
         return AUTH_API.rx.responseData(.post, Urls.compose(path:Paths.customMessage), parameters: ["receiver_uuids":receiverUuids.toJsonString(), "template_id":templateId, "template_args":templateArgs?.toJsonString()].filterNil())
             .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
@@ -165,8 +173,9 @@ extension Reactive where Base: TalkApi {
             .asSingle()
     }
     
-    /// 지정된 URL을 스크랩하여, 조회한 친구를 대상으로 카카오톡으로 메시지를 전송합니다. 스크랩 커스텀 템플릿 가이드(https://developers.kakao.com/docs/latest/ko/message/ios#send-kakaotalk-msg) 를  참고하여 템플릿을 직접 만들고 스크랩 메시지 전송에 이용할 수도 있습니다.
-    /// - seealso: `MessageSendResult`
+    /// 지정된 URL을 스크랩하여, 조회한 친구를 대상으로 카카오톡으로 메시지를 전송합니다. [스크랩 커스텀 템플릿 가이드](https://developers.kakao.com/docs/latest/ko/message/ios#send-kakaotalk-msg) 를  참고하여 템플릿을 직접 만들고 스크랩 메시지 전송에 이용할 수도 있습니다.
+    /// ## SeeAlso
+    /// - ``MessageSendResult``
     public func sendScrapMessage(requestUrl: String, templateId: Int64? = nil, templateArgs:[String:String]? = nil, receiverUuids:[String]) -> Single<MessageSendResult> {
         return AUTH_API.rx.responseData(.post, Urls.compose(path:Paths.scrapMessage),
                                         parameters: ["receiver_uuids":receiverUuids.toJsonString(), "request_url": requestUrl, "template_id":templateId, "template_args":templateArgs?.toJsonString()].filterNil())
@@ -182,7 +191,8 @@ extension Reactive where Base: TalkApi {
     // MARK: Kakaotalk Channel
     
     /// 사용자가 특정 카카오톡 채널을 추가했는지 확인합니다.
-    /// - seealso: `Channel`
+    /// ## SeeAlso
+    /// - ``Channel``
     public func channels(publicIds: [String]? = nil) -> Single<Channels> {
         return AUTH_API.rx.responseData(.get, Urls.compose(path:Paths.channels),
                                     parameters: ["channel_public_ids":publicIds?.toJsonString()].filterNil())
@@ -192,5 +202,46 @@ extension Reactive where Base: TalkApi {
             })
             .compose(API.rx.decodeDataComposeTransformer())
             .asSingle()
+    }
+    
+    private func validateChannel(validatePathUri: String, channelPublicId: String) -> Observable<(HTTPURLResponse, Data)> {
+        return API.rx.responseData(.post, Urls.compose(path: Paths.channelValidate),
+                                   parameters: ["quota_properties": ["uri": validatePathUri, "channel_public_id": channelPublicId].toJsonString()].filterNil(),
+                                   headers: ["Authorization": "KakaoAK \(try! KakaoSDK.shared.appKey())"],
+                                   sessionType: .Api)
+        .compose(API.rx.checkKApiErrorComposeTransformer())
+    }
+
+    /// 카카오톡 채널 추가
+    /// - parameter channelPublicId: 카카오톡 채널 홈 URL에 들어간 {_영문}으로 구성된 고유 아이디입니다. 홈 URL은 카카오톡 채널 관리자센터 > 관리 > 상세설정 페이지에서 확인할 수 있습니다.
+    public func addChannel(channelPublicId: String) -> Completable {
+        return Observable.from {
+            if !TalkApi.isKakaoTalkChannelAvailable(path: "plusfriend/home/\(channelPublicId)/add") {
+                throw SdkError(reason: .IllegalState, message: "KakaoTalk is not available")
+            }
+            return validateChannel(validatePathUri: "/sdk/channel/add", channelPublicId: channelPublicId)
+        }
+        .ignoreElements()
+        .asCompletable()
+        .do(onCompleted: {
+            UIApplication.shared.open(URL(string: Urls.compose(.PlusFriend, path: "plusfriend/home/\(channelPublicId)/add"))!)
+        })
+    }
+    
+    /// 카카오톡 채널 1:1 대화방 실행
+    /// - parameter channelPublicId: 카카오톡 채널 홈 URL에 들어간 {_영문}으로 구성된 고유 아이디입니다. 홈 URL은 카카오톡 채널 관리자센터 > 관리 > 상세설정 페이지에서 확인할 수 있습니다.
+    public func chatChannel(channelPublicId: String) -> Completable {
+        return Observable.from {
+            if !TalkApi.isKakaoTalkChannelAvailable(path: "plusfriend/talk/chat/\(channelPublicId)") {
+                throw SdkError(reason: .IllegalState, message: "KakaoTalk is not available")
+            }
+            
+            return validateChannel(validatePathUri: "/sdk/channel/chat", channelPublicId: channelPublicId)
+        }
+        .ignoreElements()
+        .asCompletable()
+        .do(onCompleted: {
+            UIApplication.shared.open(URL(string: Urls.compose(.PlusFriend, path: "plusfriend/talk/chat/\(channelPublicId)"))!)
+        })
     }
 }

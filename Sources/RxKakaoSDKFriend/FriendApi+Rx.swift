@@ -29,7 +29,8 @@ extension PickerApi: ReactiveCompatible {}
 extension Reactive where Base: PickerApi  {
     
     /// 여러 명의 친구를 선택(멀티 피커)할 수 있는 친구 피커를 화면 전체에 표시합니다.
-    /// - seealso: `OpenPickerFriendRequestParams`
+    /// ## SeeAlso
+    /// - ``OpenPickerFriendRequestParams``
     public func selectFriends(params:OpenPickerFriendRequestParams) -> Observable<SelectedUsers> {
         return Observable<SelectedUsers>.create { observer in            
             PickerApi.shared.selectFriends(params: params) { (selectedUsers, error) in
@@ -50,7 +51,8 @@ extension Reactive where Base: PickerApi  {
     }
     
     /// 여러 명의 친구를 선택(멀티 피커)할 수 있는 친구 피커를 팝업 형태로 표시합니다.
-    /// - seealso: `OpenPickerFriendRequestParams`
+    /// ## SeeAlso
+    /// - ``OpenPickerFriendRequestParams``
     public func selectFriendsPopup(params:OpenPickerFriendRequestParams) -> Observable<SelectedUsers> {
         return Observable<SelectedUsers>.create { observer in
             PickerApi.shared.selectFriendsPopup(params: params) { (selectedUsers, error) in
@@ -71,7 +73,8 @@ extension Reactive where Base: PickerApi  {
     }
     
     /// 한 명의 친구만 선택(싱글 피커)할 수 있는 친구 피커를 화면 전체에 표시합니다.
-    /// - seealso: `OpenPickerFriendRequestParams`
+    /// ## SeeAlso
+    /// - ``OpenPickerFriendRequestParams``
     public func selectFriend(params:OpenPickerFriendRequestParams) -> Observable<SelectedUsers> {
         return Observable<SelectedUsers>.create { observer in
             PickerApi.shared.selectFriend(params: params) { (selectedUsers, error) in
@@ -92,7 +95,8 @@ extension Reactive where Base: PickerApi  {
     }
     
     /// 한 명의 친구만 선택(싱글 피커)할 수 있는 친구 피커를 팝업 형태로 표시합니다.
-    /// - seealso: `OpenPickerFriendRequestParams`
+    /// ## SeeAlso
+    /// - ``OpenPickerFriendRequestParams``
     public func selectFriendPopup(params:OpenPickerFriendRequestParams) -> Observable<SelectedUsers> {
         return Observable<SelectedUsers>.create { observer in
             PickerApi.shared.selectFriendPopup(params: params) { (selectedUsers, error) in

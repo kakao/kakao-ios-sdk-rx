@@ -31,7 +31,8 @@ extension Reactive where Base: ShareApi {
     // MARK: Fields
     
     /// 템플릿 조회 API 응답을 카카오톡 공유 URL로 변환합니다.
-    /// - seealso: `SharingResult`
+    /// ## SeeAlso
+    /// - ``SharingResult``
     public func createSharingResultComposeTransformer(targetAppKey:String? = nil) -> ComposeTransformer<(ValidationResult, [String:Any]?), SharingResult> {
         return ComposeTransformer<(ValidationResult, [String:Any]?), SharingResult> { (observable) in
             
@@ -98,19 +99,23 @@ extension Reactive where Base: ShareApi {
     }
     
     /// 기본 템플릿을 카카오톡으로 공유합니다.
-    /// - seealso: `Template` <br> `SharingResult`
+    /// ## SeeAlso
+    /// - ``Template``
+    /// - ``SharingResult``
     public func shareDefault(templatable: Templatable, serverCallbackArgs:[String:String]? = nil ) -> Single<SharingResult> {
         return self.shareDefault(templateObjectJsonString: templatable.toJsonObject()?.toJsonString(), serverCallbackArgs:serverCallbackArgs)
     }
     
     /// 기본 템플릿을 카카오톡으로 공유합니다.
-    /// - seealso: `SharingResult`
+    /// ## SeeAlso
+    /// - ``SharingResult``
     public func shareDefault(templateObject:[String:Any], serverCallbackArgs:[String:String]? = nil ) -> Single<SharingResult> {
         return self.shareDefault(templateObjectJsonString: templateObject.toJsonString(), serverCallbackArgs:serverCallbackArgs)
     }
     
     /// 지정된 URL을 스크랩하여 만들어진 템플릿을 카카오톡으로 공유합니다.
-    /// - seealso: `SharingResult`
+    /// ## SeeAlso
+    /// - ``SharingResult``
     public func shareScrap(requestUrl:String, templateId:Int64? = nil, templateArgs:[String:String]? = nil, serverCallbackArgs:[String:String]? = nil ) -> Single<SharingResult> {
         return API.rx.responseData(.post,
                                 Urls.compose(path:Paths.shareScrapValidate),
@@ -137,7 +142,8 @@ extension Reactive where Base: ShareApi {
     }
     
     /// 카카오 디벨로퍼스에서 생성한 메시지 템플릿을 카카오톡으로 공유합니다. 템플릿을 생성하는 방법은 https://developers.kakao.com/docs/latest/ko/message/ios#create-message 을 참고하시기 바랍니다.
-    /// - seealso: `SharingResult`
+    /// ## SeeAlso
+    /// - ``SharingResult``
     public func shareCustom(templateId:Int64, templateArgs:[String:String]? = nil, serverCallbackArgs:[String:String]? = nil) -> Single<SharingResult> {
         return API.rx.responseData(.post,
                                 Urls.compose(path:Paths.shareCustomValidate),

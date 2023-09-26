@@ -23,21 +23,21 @@ import KakaoSDKAuth
 
 import RxKakaoSDKCommon
 
-/// :nodoc:
+@_documentation(visibility:private)
 @available(iOSApplicationExtension, unavailable)
 let AUTH_CONTROLLER = AuthController.shared
 
-/// :nodoc:
+@_documentation(visibility:private)
 @available(iOSApplicationExtension, unavailable)
 extension AuthController: ReactiveCompatible {}
 
-/// :nodoc:
+@_documentation(visibility:private)
 @available(iOSApplicationExtension, unavailable)
 extension Reactive where Base: AuthController {
 
     // MARK: Login with KakaoTalk
     
-    /// :nodoc:
+    
     public func _authorizeWithTalk(launchMethod: LaunchMethod? = nil,
                                   channelPublicIds: [String]? = nil,
                                   serviceTerms: [String]? = nil,
@@ -108,7 +108,7 @@ extension Reactive where Base: AuthController {
     }    
     
     // MARK: New Agreement
-    /// :nodoc:
+    
     public func _authorizeByAgtWithAuthenticationSession(scopes:[String],
                                                          state: String? = nil,
                                                          nonce: String? = nil) -> Observable<OAuthToken> {
@@ -139,7 +139,7 @@ extension Reactive where Base: AuthController {
         })
     }
   
-    /// :nodoc:
+    
     public func _authorizeWithAuthenticationSession(prompts : [Prompt]? = nil,
                                                     state: String? = nil,
                                                     agtToken: String? = nil,

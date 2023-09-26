@@ -71,7 +71,8 @@ extension Reactive where Base: StoryApi {
     }
     
     /// 로그인된 사용자의 카카오스토리 프로필 정보를 얻을 수 있습니다.
-    /// - seealso: `StoryProfile`
+    /// ## SeeAlso
+    /// - ``StoryProfile``
     public func profile(secureResource: Bool = true) -> Single<StoryProfile> {
         return AUTH_API.rx.responseData(.get, Urls.compose(path:Paths.storyProfile),
                                  parameters: ["secure_resource":secureResource].filterNil())
@@ -84,7 +85,8 @@ extension Reactive where Base: StoryApi {
     }
     
     /// 카카오스토리의 특정 내스토리 정보를 얻을 수 있습니다. comments, likes등의 상세정보도 포함됩니다.
-    /// - seealso: `Story`
+    /// ## SeeAlso
+    /// - ``Story``
     public func story(id:String) -> Single<Story> {
         return AUTH_API.rx.responseData(.get, Urls.compose(path:Paths.myStory),
                                  parameters: ["id":id].filterNil())
@@ -97,7 +99,8 @@ extension Reactive where Base: StoryApi {
     }
     
     /// 카카오스토리의 여러 개의 내스토리 정보들을 얻을 수 있습니다. 단, comments, likes등의 상세정보는 없으며 이는 내스토리 정보 요청 `story(id:)`을 통해 얻을 수 있습니다.
-    /// - seealso: `Story`
+    /// ## SeeAlso
+    /// - ``Story``
     public func stories(lastId:String? = nil) -> Single<[Story]?> {
         return AUTH_API.rx.responseData(.get, Urls.compose(path:Paths.myStories),
                                  parameters: ["last_id":lastId].filterNil())
@@ -110,7 +113,8 @@ extension Reactive where Base: StoryApi {
     }
     
     /// 포스팅하고자 하는 URL을 스크랩하여 링크 정보를 생성합니다.
-    /// - seealso: `LinkInfo`
+    /// ## SeeAlso
+    /// - ``LinkInfo``
     public func linkInfo(url: URL) -> Single<LinkInfo> {
         return AUTH_API.rx.responseData(.get, Urls.compose(path:Paths.storyLinkInfo),
                                  parameters: ["url":url].filterNil())
@@ -161,7 +165,9 @@ extension Reactive where Base: StoryApi {
     /// 카카오스토리에 링크(스크랩 정보)를 포스팅합니다.
     ///
     /// 먼저 포스팅하고자 하는 URL로 스크랩 API를 호출한 후 반환된 링크 정보를 파라미터로 전달하여 포스팅 해야 합니다.
-    /// - seealso: `linkInfo(url:)` <br>`LinkInfo`
+    /// ## SeeAlso
+    /// - ``linkInfo(url:)``
+    /// - ``LinkInfo``
     public func postLink(content:String? = nil,
                          linkInfo:LinkInfo,
                          permission:Story.Permission = .Public,
