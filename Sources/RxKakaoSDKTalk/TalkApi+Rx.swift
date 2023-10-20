@@ -46,7 +46,6 @@ extension Reactive where Base: TalkApi {
     /// 로그인된 사용자의 카카오톡 프로필 정보를 얻을 수 있습니다.
     /// ## SeeAlso
     /// - ``TalkProfile``
-    @_documentation(visibility:public)
     public func profile() -> Single<TalkProfile> {
         return AUTH_API.rx.responseData(.get, Urls.compose(path:Paths.talkProfile))
             .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())

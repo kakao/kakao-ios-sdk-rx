@@ -22,11 +22,15 @@ import RxKakaoSDKCommon
 
 import KakaoSDKAuth
 
-@_documentation(visibility:private)
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
 @available(iOSApplicationExtension, unavailable)
 extension AuthApiCommon: ReactiveCompatible {}
 
-@_documentation(visibility:private)
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
 /// 내부 Rx전용 extension 입니다.
 @available(iOSApplicationExtension, unavailable)
 extension Reactive where Base: AuthApiCommon {        

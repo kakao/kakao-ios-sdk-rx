@@ -79,8 +79,7 @@ extension Reactive where Base: ShareApi {
         return API.rx.responseData(.post,
                                 Urls.compose(path:Paths.shareDefalutValidate),
                                 parameters: ["link_ver":"4.0",
-                                             "template_object":templateObjectJsonString,
-                                             "target_app_key":try! KakaoSDK.shared.appKey()]
+                                             "template_object":templateObjectJsonString]
                                     .filterNil(),
                                 headers: ["Authorization":"KakaoAK \(try! KakaoSDK.shared.appKey())"],
                                 sessionType: .Api
@@ -122,8 +121,7 @@ extension Reactive where Base: ShareApi {
                                 parameters: ["link_ver":"4.0",
                                              "request_url":requestUrl,
                                              "template_id":templateId,
-                                             "template_args":templateArgs?.toJsonString(),
-                                             "target_app_key":try! KakaoSDK.shared.appKey()]
+                                             "template_args":templateArgs?.toJsonString()]
                                     .filterNil(),
                                 headers: ["Authorization":"KakaoAK \(try! KakaoSDK.shared.appKey())"],
                                 sessionType: .Api
@@ -149,8 +147,7 @@ extension Reactive where Base: ShareApi {
                                 Urls.compose(path:Paths.shareCustomValidate),
                                 parameters: ["link_ver":"4.0",
                                              "template_id":templateId,
-                                             "template_args":templateArgs?.toJsonString(),
-                                             "target_app_key":try! KakaoSDK.shared.appKey()]
+                                             "template_args":templateArgs?.toJsonString()]
                                     .filterNil(),
                                 headers: ["Authorization":"KakaoAK \(try! KakaoSDK.shared.appKey())"],
                                 sessionType: .Api

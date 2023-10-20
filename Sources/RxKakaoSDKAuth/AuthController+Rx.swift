@@ -23,15 +23,21 @@ import KakaoSDKAuth
 
 import RxKakaoSDKCommon
 
-@_documentation(visibility:private)
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
 @available(iOSApplicationExtension, unavailable)
 let AUTH_CONTROLLER = AuthController.shared
 
-@_documentation(visibility:private)
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
 @available(iOSApplicationExtension, unavailable)
 extension AuthController: ReactiveCompatible {}
 
-@_documentation(visibility:private)
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
 @available(iOSApplicationExtension, unavailable)
 extension Reactive where Base: AuthController {
 
