@@ -1,7 +1,7 @@
 // swift-tools-version:5.3
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
-// sdk-version:2.18.2
+// sdk-version:2.19.0
 import PackageDescription
 
 let package = Package(
@@ -12,7 +12,7 @@ let package = Package(
     products: [
         .library(
             name: "RxKakaoSDK",
-            targets: ["RxKakaoSDKCommon", "RxKakaoSDKAuth", "RxKakaoSDKUser", "RxKakaoSDKTalk", "RxKakaoSDKFriend", "RxKakaoSDKStory", "RxKakaoSDKShare"]),
+            targets: ["RxKakaoSDKCommon", "RxKakaoSDKAuth", "RxKakaoSDKUser", "RxKakaoSDKTalk", "RxKakaoSDKFriend", "RxKakaoSDKShare"]),
         .library(
             name: "RxKakaoSDKCommon",
             targets: ["RxKakaoSDKCommon"]),
@@ -29,16 +29,13 @@ let package = Package(
             name: "RxKakaoSDKFriend",
             targets: ["RxKakaoSDKFriend"]),
         .library(
-            name: "RxKakaoSDKStory",
-            targets: ["RxKakaoSDKStory"]),
-        .library(
             name: "RxKakaoSDKShare",
             targets: ["RxKakaoSDKShare"])
     ],
     dependencies: [
         .package(name: "KakaoOpenSDK",
                  url: "https://github.com/kakao/kakao-ios-sdk.git",
-                 .exact("2.18.2")
+                 .exact("2.19.0")
                 ),
         
         .package(name: "RxAlamofire",
@@ -91,15 +88,7 @@ let package = Package(
                 .product(name: "KakaoSDKFriend", package: "KakaoOpenSDK")
             ],
             exclude: ["Info.plist", "README.md"]
-        ),
-        .target(
-            name: "RxKakaoSDKStory",
-            dependencies: [
-                .target(name: "RxKakaoSDKUser"),
-                .product(name: "KakaoSDKStory", package: "KakaoOpenSDK")
-            ],
-            exclude: ["Info.plist", "README.md"]
-        ),
+        ),        
         .target(
             name: "RxKakaoSDKShare",
             dependencies: [
