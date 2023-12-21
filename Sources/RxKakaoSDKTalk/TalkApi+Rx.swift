@@ -243,4 +243,26 @@ extension Reactive where Base: TalkApi {
             UIApplication.shared.open(URL(string: Urls.compose(.PlusFriend, path: "plusfriend/talk/chat/\(channelPublicId)"))!)
         })
     }
+    
+    /// 카카오톡 채널 간편 추가
+    /// - parameter channelPublicId: 카카오톡 채널 홈 URL에 들어간 {_영문}으로 구성된 고유 아이디입니다. 홈 URL은 카카오톡 채널 관리자센터 > 관리 > 상세설정 페이지에서 확인할 수 있습니다.
+    public func followChannel(channelPublicId: String) -> Single<FollowChannelResult> {
+        return Observable<FollowChannelResult>.create { observer in
+            TalkApi.shared.followChannel(channelPublicId: channelPublicId, completion: { followChannelResult, error in
+                if let error = error {
+                    observer.onError(error)
+                }
+                else {
+                    if let followChannelResult = followChannelResult {
+                        observer.onNext(followChannelResult)
+                    }
+                    else {
+                        observer.onError(SdkError(reason: .IllegalState))
+                    }
+                }
+            })
+            return Disposables.create()
+        }
+        .asSingle()
+    }
 }
