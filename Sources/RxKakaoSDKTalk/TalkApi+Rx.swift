@@ -255,6 +255,7 @@ extension Reactive where Base: TalkApi {
                 else {
                     if let followChannelResult = followChannelResult {
                         observer.onNext(followChannelResult)
+                        observer.onCompleted()
                     }
                     else {
                         observer.onError(SdkError(reason: .IllegalState))

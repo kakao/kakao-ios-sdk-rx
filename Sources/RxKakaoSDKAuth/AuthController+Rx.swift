@@ -107,11 +107,14 @@ extension Reactive where Base: AuthController {
     public static func handleOpenUrl(url:URL,  options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         if (AuthController.isValidRedirectUri(url)) {
             if let authorizeWithTalkCompletionHandler = AUTH_CONTROLLER.authorizeWithTalkCompletionHandler {
-                authorizeWithTalkCompletionHandler(url)
+                DispatchQueue.main.asyncAfter(deadline: .now() + AuthController.delayForHandleOpenUrl) {
+                    authorizeWithTalkCompletionHandler(url)
+                }
+                return true
             }
         }
         return false
-    }    
+    }
     
     // MARK: New Agreement
     

@@ -330,4 +330,23 @@ extension Reactive where Base: UserApi {
             .compose(API.rx.decodeDataComposeTransformer())
             .asSingle()
     }
+    
+    /// 배송지 선택하기
+    public func selectShippingAddress() -> Single<Int64> {
+        return Observable<Int64>.create { observer in
+            UserApi.shared.selectShippingAddress() { (addressId, error) in
+                if let error = error {
+                    observer.onError(error)
+                } else {                    
+                    if let addressId = addressId {
+                        observer.onNext(addressId)
+                        observer.onCompleted()
+                    } else {
+                        observer.onError(SdkError(reason: .IllegalState))
+                    }
+                }
+            }
+            return Disposables.create()
+        }.asSingle()
+    }
 }
