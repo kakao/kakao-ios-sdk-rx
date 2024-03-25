@@ -205,7 +205,8 @@ extension Reactive where Base: AuthApi {
     public func prepare(certType: CertType,
                         txId: String? = nil,
                         settleId: String? = nil,
-                        signData: String? = nil) -> Single<String?> {
+                        signData: String? = nil,
+                        identifyItems: [IdentifyItem]? = nil) -> Single<String?> {
         return API.rx.responseData(.post,
                                    Urls.compose(.Kauth, path: Paths.authPrepare),
                                    parameters: [
@@ -213,7 +214,8 @@ extension Reactive where Base: AuthApi {
                                     "cert_type": certType.rawValue,
                                     "tx_id":txId,
                                     "settle_id": settleId,
-                                    "sign_data": signData                                    
+                                    "sign_data": signData,
+                                    "sign_identify_items": identifyItems?.map({ $0.rawValue }).joined(separator: ","),
                                     ].filterNil(),
                                    sessionType: .Auth)
             .compose(API.rx.checkKAuthErrorComposeTransformer())
