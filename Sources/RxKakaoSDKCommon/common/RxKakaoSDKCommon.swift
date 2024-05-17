@@ -15,28 +15,24 @@
 import Foundation
 import KakaoSDKCommon
 
-/// ReactiveX Kakao SDK 공통의 환경변수 설정을 위한 클래스입니다.
-///
-/// 싱글톤으로 제공되는 인스턴스를 사용해야 하며 다음과 같이 초기화할 수 있습니다.
-///
-///     // AppDelegate.swift
-///     func application(_ application: UIApplication,
-///                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-///
-///         RxKakaoSDK.initSDK(appKey: "<#Your App Key#>")
-///
-///         return true
-///     }
-/// - important: SDK 초기화가 수행되지 않으면 SDK 내 모든 기능을 사용할 수 없습니다. 반드시 가장 먼저 실행되어야 합니다.
+/// 주요 설정 및 초기화 클래스 \
+/// Class for major settings and initializing
+///## SeeAlso
+///- [초기화](https://developers.kakao.com/docs/latest/ko/ios/getting-started#init) \
+///  [Initialize](https://developers.kakao.com/docs/latest/en/ios/getting-started#init)
 final public class RxKakaoSDK {
     
     // MARK: Fields
     
-    /// ReactiveX Kakao SDK 초기화를 수행합니다.
+    /// Kakao SDK 초기화 \
+    /// Initializes Kakao SDK
     /// - parameters:
-    ///   - appKey: [카카오 디벨로퍼스](https://developers.kakao.com)에서 발급 받은 NATIVE_APP_KEY
-    ///   - customScheme: 로그인 시 인증코드를 발급 받을 URI. 내 앱의 커스텀 스킴에 로그인 요청임을 구분할 수 있는 host 및 path를 덧붙여 사용합니다. ex) myappscheme://oauth
-    ///   - loggingEnable: SDK에서 디버그 로깅를 사용 여부
+    ///   - appKey: 앱 키 \
+    ///             App key
+    ///   - customScheme: 앱별 커스텀 URL 스킴 \
+    ///                   Custom URL scheme for each app
+    ///   - loggingEnable: Kakao SDK 내부 로그 기능 활성화 여부 \
+    ///                    Whether to enable the internal log of the Kakao SDK
     
     public static func initSDK(appKey: String,
                                customScheme: String? = nil,

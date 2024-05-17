@@ -24,12 +24,15 @@ import KakaoSDKTemplate
 
 extension ShareApi: ReactiveCompatible {}
 
-/// `ShareApi`의 ReactiveX 확장입니다.
-///
+/// [카카오톡 공유](https://developers.kakao.com/docs/latest/ko/message/common) API 클래스 \
+/// Class for the [Kakao Talk Sharing](https://developers.kakao.com/docs/latest/en/message/common) APIs
 extension Reactive where Base: ShareApi {
     
     // MARK: Fields
     
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
     /// 템플릿 조회 API 응답을 카카오톡 공유 URL로 변환합니다.
     /// ## SeeAlso
     /// - ``SharingResult``
@@ -75,6 +78,13 @@ extension Reactive where Base: ShareApi {
     
     // MARK: Using KakaoTalk
     
+    /// 기본 템플릿으로 메시지 보내기 \
+    /// Send message with default template
+    /// - parameters:
+    ///   - templateObjectJsonString: 기본 템플릿 객체를 JSON 형식으로 변환한 문자열 \
+    ///                               String converted in JSON format from a default template
+    ///   - serverCallbackArgs: 카카오톡 공유 전송 성공 알림에 포함할 키와 값 \
+    ///                          Keys and values for the Kakao Talk Sharing success callback
     func shareDefault(templateObjectJsonString:String?, serverCallbackArgs:[String:String]? = nil ) -> Single<SharingResult> {
         return API.rx.responseData(.post,
                                 Urls.compose(path:Paths.shareDefalutValidate),
@@ -97,7 +107,13 @@ extension Reactive where Base: ShareApi {
             .asSingle()
     }
     
-    /// 기본 템플릿을 카카오톡으로 공유합니다.
+    /// 기본 템플릿으로 메시지 보내기 \
+    /// Send message with default template
+    /// - parameters:
+    ///   - templatable: 기본 템플릿으로 변환 가능한 객체 \
+    ///                  Object to convert to a default template
+    ///   - serverCallbackArgs: 카카오톡 공유 전송 성공 알림에 포함할 키와 값 \
+    ///                         Keys and values for the Kakao Talk Sharing success callback
     /// ## SeeAlso
     /// - ``Template``
     /// - ``SharingResult``
@@ -105,14 +121,30 @@ extension Reactive where Base: ShareApi {
         return self.shareDefault(templateObjectJsonString: templatable.toJsonObject()?.toJsonString(), serverCallbackArgs:serverCallbackArgs)
     }
     
-    /// 기본 템플릿을 카카오톡으로 공유합니다.
+    /// 기본 템플릿으로 메시지 보내기 \
+    /// Send message with default template
+    /// - parameters:
+    ///   - templateObject: 기본 템플릿 객체 \
+    ///                     Default template object
+    ///   - serverCallbackArgs: 카카오톡 공유 전송 성공 알림에 포함할 키와 값 \
+    ///                         Keys and values for the Kakao Talk Sharing success callback
     /// ## SeeAlso
     /// - ``SharingResult``
     public func shareDefault(templateObject:[String:Any], serverCallbackArgs:[String:String]? = nil ) -> Single<SharingResult> {
         return self.shareDefault(templateObjectJsonString: templateObject.toJsonString(), serverCallbackArgs:serverCallbackArgs)
     }
     
-    /// 지정된 URL을 스크랩하여 만들어진 템플릿을 카카오톡으로 공유합니다.
+    /// 스크랩 메시지 보내기 \
+    /// Send scrape message
+    ///  - parameters:
+    ///    - requestUrl: 스크랩할 URL \
+    ///                  URL to scrape
+    ///    - templateId: 사용자 정의 템플릿 ID \
+    ///                  Custom template ID
+    ///    - templateArgs: 사용자 인자 키와 값 \
+    ///                    Keys and values of the user argument
+    ///    - serverCallbackArgs: 카카오톡 공유 전송 성공 알림에 포함할 키와 값 \
+    ///                          Keys and values for the Kakao Talk Sharing success callback
     /// ## SeeAlso
     /// - ``SharingResult``
     public func shareScrap(requestUrl:String, templateId:Int64? = nil, templateArgs:[String:String]? = nil, serverCallbackArgs:[String:String]? = nil ) -> Single<SharingResult> {
@@ -139,7 +171,15 @@ extension Reactive where Base: ShareApi {
             .asSingle()
     }
     
-    /// 카카오 디벨로퍼스에서 생성한 메시지 템플릿을 카카오톡으로 공유합니다. 템플릿을 생성하는 방법은 https://developers.kakao.com/docs/latest/ko/message/ios#create-message 을 참고하시기 바랍니다.
+    /// 사용자 정의 템플릿으로 메시지 보내기 \
+    /// Send message with custom template
+    /// - parameters:
+    ///   - templateId: 사용자 정의 템플릿 ID \
+    ///                 Custom template ID
+    ///   - templateArgs: 사용자 인자 키와 값 \
+    ///                   Keys and values of the user argument
+    ///   - serverCallbackArgs: 카카오톡 공유 전송 성공 알림에 포함할 키와 값 \
+    ///                         Keys and values for the Kakao Talk Sharing success callback
     /// ## SeeAlso
     /// - ``SharingResult``
     public func shareCustom(templateId:Int64, templateArgs:[String:String]? = nil, serverCallbackArgs:[String:String]? = nil) -> Single<SharingResult> {
@@ -167,7 +207,13 @@ extension Reactive where Base: ShareApi {
  
     // MARK: Image Upload
     
-    /// 카카오톡 공유 컨텐츠 이미지로 활용하기 위해 로컬 이미지를 카카오 이미지 서버로 업로드 합니다.
+    /// 이미지 업로드하기 \
+    /// Upload image
+    /// - parameters:
+    ///   - image: 이미지 파일 \
+    ///            Image file
+    ///   - secureResource: 이미지 URL을 HTTPS로 설정 \
+    ///                     Whether to use HTTPS for the image URL
     public func imageUpload(image: UIImage, secureResource: Bool = true) -> Single<ImageUploadResult> {
         return API.rx.upload(.post, Urls.compose(path:Paths.shareImageUpload),
                           images: [image],
@@ -182,7 +228,13 @@ extension Reactive where Base: ShareApi {
             .asSingle()
     }
     
-    /// 카카오톡 공유 컨텐츠 이미지로 활용하기 위해 원격 이미지를 카카오 이미지 서버로 스크랩 합니다.
+    /// 이미지 스크랩하기 \
+    /// Scrape image
+    /// - parameters:
+    ///   - imageUrl: 이미지 URL \
+    ///               Image URL
+    ///   - secureResource: 이미지 URL을 HTTPS로 설정 \
+    ///                     Whether to use HTTPS for the image URL
     public func imageScrap(imageUrl: URL, secureResource: Bool = true) -> Single<ImageUploadResult> {
         return API.rx.responseData(.post, Urls.compose(path:Paths.shareImageScrap),
                                 parameters: ["image_url": imageUrl.absoluteString, "secure_resource": secureResource],
