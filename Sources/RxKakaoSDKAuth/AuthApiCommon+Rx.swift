@@ -15,7 +15,7 @@
 import Foundation
 import UIKit
 import RxSwift
-import Alamofire
+import RxCocoa
 
 import KakaoSDKCommon
 import RxKakaoSDKCommon
@@ -106,18 +106,18 @@ extension Reactive where Base: AuthApiCommon {
         
     }
     
-    public func responseData(_ HTTPMethod: Alamofire.HTTPMethod,
+    public func responseData(_ kHTTPMethod: KHTTPMethod,
                       _ url: String,
                       parameters: [String: Any]? = nil,
                       headers: [String: String]? = nil) -> Observable<(HTTPURLResponse, Data)> {
         
-        return API.rx.responseData(HTTPMethod, url, parameters: parameters, headers: headers)
+        return API.rx.responseData(kHTTPMethod, url, parameters: parameters, headers: headers)
     }
     
-    public func upload(_ HTTPMethod: Alamofire.HTTPMethod,
+    public func upload(_ kHTTPMethod: KHTTPMethod,
                        _ url: String,
                        images: [UIImage?] = [],
                        headers: [String: String]? = nil) -> Observable<(HTTPURLResponse, Data)> {
-        return API.rx.upload(HTTPMethod, url, images:images, headers: headers)
+        return API.rx.upload(kHTTPMethod, url, images:images, headers: headers)
     }
 }

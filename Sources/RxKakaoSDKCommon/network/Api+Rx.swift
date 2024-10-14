@@ -15,8 +15,8 @@
 import Foundation
 import UIKit
 import RxSwift
+import RxCocoa
 
-import Alamofire
 import RxAlamofire
 import KakaoSDKCommon
 
@@ -74,19 +74,19 @@ extension Reactive where Base: Api {
         }
     }
     
-    public func responseData(_ HTTPMethod: Alamofire.HTTPMethod,
+    public func responseData(_ kHTTPMethod: KHTTPMethod,
                       _ url: String,
                       parameters: [String: Any]? = nil,
                       headers: [String: String]? = nil,
                       sessionType: SessionType = .RxAuthApi) -> Observable<(HTTPURLResponse, Data)> {        
         return API.session(sessionType)
             .rx
-            .responseData(HTTPMethod, url, parameters: parameters, encoding:API.encoding, headers: (headers != nil ? HTTPHeaders(headers!):nil))
+            .responseData(Api.httpMethod(kHTTPMethod), url, parameters: parameters, encoding:API.encoding, headers: Api.httpHeaders(headers))
             .do (
                 onNext: {
                     let json = (try? JSONSerialization.jsonObject(with:$1, options:[])) as? [String: Any]
                     SdkLog.d("===================================================================================================")
-                    SdkLog.i("request: \n method: \(HTTPMethod)\n url:\(url)\n headers:\(String(describing: headers))\n parameters: \(String(describing: parameters)) \n\n")
+                    SdkLog.i("request: \n method: \(Api.httpMethod(kHTTPMethod))\n url:\(url)\n headers:\(String(describing: headers))\n parameters: \(String(describing: parameters)) \n\n")
                     SdkLog.i("response:\n \(String(describing: json))\n\n" )
                 },
                 onError: {
@@ -97,7 +97,7 @@ extension Reactive where Base: Api {
         })
     }
     
-    public func upload(_ HTTPMethod: Alamofire.HTTPMethod,
+    public func upload(_ kHTTPMethod: KHTTPMethod,
                        _ url: String,
                        images: [UIImage?] = [],
                        parameters: [String: Any]? = nil,
@@ -125,7 +125,7 @@ extension Reactive where Base: Api {
                         }
                         formData.append(data, withName: arg.key)
                     })
-                }, to: url, method: HTTPMethod, headers: (headers != nil ? HTTPHeaders(headers!):nil))
+                }, to: url, method: Api.httpMethod(kHTTPMethod), headers: Api.httpHeaders(headers))
                 .uploadProgress(queue: .main, closure: { (progress) in
                     SdkLog.i("upload progress: \(String(format:"%.2f", 100.0 * progress.fractionCompleted))%")
                 })

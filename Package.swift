@@ -1,11 +1,12 @@
 // swift-tools-version:5.3
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
-// sdk-version:2.22.7
+// sdk-version:2.23.0
 import PackageDescription
 
 let package = Package(
     name: "RxKakaoOpenSDK",
+    defaultLocalization: "ko",
     platforms: [
         .iOS(.v13)
     ],
@@ -38,7 +39,7 @@ let package = Package(
     dependencies: [
         .package(name: "KakaoOpenSDK",
                  url: "https://github.com/kakao/kakao-ios-sdk.git",
-                 .exact("2.22.7")
+                 .exact("2.23.0")
                 ),
         
         .package(name: "RxAlamofire",
@@ -54,6 +55,7 @@ let package = Package(
             name: "RxKakaoSDKCommon",
             dependencies: [
                 .product(name: "RxSwift", package: "RxSwift"),
+                .product(name: "RxCocoa", package: "RxSwift"),
                 .product(name: "RxAlamofire", package: "RxAlamofire"),
                 .product(name: "KakaoSDKCommon", package: "KakaoOpenSDK")
             ],
