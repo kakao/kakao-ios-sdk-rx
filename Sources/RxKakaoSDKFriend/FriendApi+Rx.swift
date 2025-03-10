@@ -25,8 +25,8 @@ import KakaoSDKFriend
 
 extension PickerApi: ReactiveCompatible {}
 
-/// [피커](/docs/latest/ko/kakaotalk-social/common) API 클래스 \
-/// Class for the [picker](/docs/latest/en/kakaotalk-social/common) APIs
+/// [피커](https://developers.kakao.com/docs/latest/ko/kakaotalk-social/common) API 클래스 \
+/// Class for the [picker](https://developers.kakao.com/docs/latest/en/kakaotalk-social/common) APIs
 extension Reactive where Base: PickerApi  {
     
     /// 풀 스크린 형태의 멀티 피커 요청 \
