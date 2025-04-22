@@ -85,6 +85,7 @@ extension Reactive where Base: AuthController {
             
             return Disposables.create()
         }
+        .take(1)
         .flatMap { code in
             AuthApi.shared.rx.token(code: code, codeVerifier: AUTH_CONTROLLER.codeVerifier).asObservable()
         }
@@ -292,6 +293,7 @@ extension Reactive where Base: AuthController {
             
             return Disposables.create()
         }
+        .take(1)
         .flatMap { code in
             AuthApi.shared.rx.certToken(code: code, codeVerifier: AUTH_CONTROLLER.codeVerifier).asObservable()
         }
