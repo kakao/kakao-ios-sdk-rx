@@ -38,13 +38,11 @@ final public class RxKakaoSDK {
                                customScheme: String? = nil,
                                loggingEnable: Bool = false,
                                hosts: Hosts? = nil,
-                               approvalType: ApprovalType? = nil,
                                sdkIdentifier: SdkIdentifier? = nil) {
         KakaoSDK.shared.initialize(appKey: appKey,
                                    customScheme: customScheme,
                                    loggingEnable: loggingEnable,
                                    hosts: hosts,
-                                   approvalType: approvalType,
                                    sdkIdentifier: sdkIdentifier,
                                    sdkType:.RxSwift)
     }

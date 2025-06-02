@@ -156,9 +156,7 @@ extension Reactive where Base: AuthController {
                                                     serviceTerms: [String]? = nil,
                                                     loginHint: String? = nil,
                                                     accountParameters: [String:String]? = nil,
-                                                    nonce: String? = nil,
-                                                    accountsSkipIntro: Bool? = nil,
-                                                    accountsTalkLoginVisible: Bool? = nil) -> Observable<OAuthToken> {
+                                                    nonce: String? = nil) -> Observable<OAuthToken> {
         return Observable<String>.create { observer in
             let authenticationSessionCompletionHandler : (URL?, Error?) -> Void = {
                 (callbackUrl:URL?, error:Error?) in
@@ -197,9 +195,7 @@ extension Reactive where Base: AuthController {
                                                             channelPublicIds: channelPublicIds,
                                                             serviceTerms: serviceTerms,
                                                             loginHint: loginHint,
-                                                            nonce: nonce,
-                                                            accountsSkipIntro: accountsSkipIntro,
-                                                            accountsTalkLoginVisible: accountsTalkLoginVisible)
+                                                            nonce: nonce)
             
             var url: URL? = nil
             if let accountParameters = accountParameters, !accountParameters.isEmpty {
