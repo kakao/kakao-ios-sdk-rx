@@ -31,7 +31,7 @@ extension Reactive where Base: AuthApi {
 #if swift(>=5.8)
     @_documentation(visibility: private)
 #endif
-    /// 추가 항목 동의 받기 요청시 인증값으로 사용되는 임시토큰 발급 요청입니다. SDK 내부 전용입니다.
+    /// 서비스 약관 선택해 동의 요청 시 인증값으로 사용되는 임시토큰 발급 요청입니다. SDK 내부 전용입니다.
     public func agt() -> Single<String?> {
         return API.rx.responseData(.post, Urls.compose(.Kauth, path:Paths.authAgt),
                                 parameters: ["client_id":try! KakaoSDK.shared.appKey(),
@@ -152,7 +152,7 @@ extension Reactive where Base: AuthApi {
     @_documentation(visibility: private)
 #endif
     /// 인가 코드로 토큰과 전자서명 접수번호 발급 \
-    /// Issues tokens and ``txId`` with the authorization code
+    /// Issues tokens and ``txId`` with the authorization code
     public func certToken(code: String,
                           codeVerifier: String? = nil,
                           redirectUri: String = KakaoSDK.shared.redirectUri()) -> Single<CertTokenInfo> {

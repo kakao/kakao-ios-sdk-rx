@@ -79,7 +79,7 @@ extension Reactive where Base: UserApi {
     
     // MARK: New Agreement
     
-    /// 추가 항목 동의 받기 \
+    /// 동의항목 추가 동의 요청 \
     /// Request additional consent
     /// - parameters:
     ///   - scopes: 동의항목 ID 목록 \
@@ -108,7 +108,7 @@ extension Reactive where Base: UserApi {
 
 // MARK: Other APIs
 extension Reactive where Base: UserApi {
-    /// 연결하기 \
+    /// 수동 연결 \
     /// Manual signup
     /// - parameters:
     ///   - properties: 사용자 프로퍼티 \
@@ -132,7 +132,7 @@ extension Reactive where Base: UserApi {
             .asSingle()
     }
     
-    /// 사용자 정보 가져오기 \
+    /// 사용자 정보 조회 \
     /// Retrieve user information
     /// - parameters:
     ///   - propertyKeys: 사용자 프로퍼티 키 목록 \
@@ -141,7 +141,7 @@ extension Reactive where Base: UserApi {
     ///                     Whether to use HTTPS for the image URL
     /// ## SeeAlso
     /// - ``User``
-    /// - [사용자 정보 가져오기](https://developers.kakao.com/docs/latest/ko/kakaologin/ios#req-user-info) \
+    /// - [사용자 정보 조회](https://developers.kakao.com/docs/latest/ko/kakaologin/ios#req-user-info) \
     ///   [Retrieve user information](https://developers.kakao.com/docs/latest/en/kakaologin/ios#req-user-info)
     public func me(propertyKeys: [String]? = nil,
                    secureResource: Bool = true) -> Single<User> {        
@@ -155,7 +155,7 @@ extension Reactive where Base: UserApi {
             .asSingle()
     }
     
-    /// 사용자 정보 저장하기 \
+    /// 사용자 프로퍼티 저장 \
     /// Store user information
     /// - parameters:
     ///   - properties: 사용자 프로퍼티 \
@@ -175,7 +175,7 @@ extension Reactive where Base: UserApi {
             .asCompletable()
     }
     
-    /// 토큰 정보 보기 \
+    /// 토큰 정보 조회 \
     /// Retrieve token information
     /// ## SeeAlso
     /// - ``AccessTokenInfo``
@@ -205,7 +205,7 @@ extension Reactive where Base: UserApi {
             })
     }
     
-    /// 연결 끊기 \
+    /// 연결 해제 \
     /// Unlink
     public func unlink() -> Completable {
         return AUTH_API.rx.responseData(.post, Urls.compose(path:Paths.userUnlink))
@@ -217,7 +217,7 @@ extension Reactive where Base: UserApi {
             })
     }
     
-    /// 배송지 가져오기 \
+    /// 배송지 조회 \
     /// Retrieve shipping address
     /// - parameters:
     ///   - fromUpdatedAt: 이전 페이지의 마지막 배송지 수정 시각, `0` 전달 시 처음부터 조회 \
@@ -237,7 +237,7 @@ extension Reactive where Base: UserApi {
             .asSingle()
     }
     
-    /// 배송지 가져오기 \
+    /// 배송지 조회 \
     /// Retrieve shipping address
     /// - parameters:
     ///   - addressId : 배송지 ID \
@@ -255,7 +255,7 @@ extension Reactive where Base: UserApi {
             .asSingle()
     }
     
-    /// 서비스 약관 동의 내역 확인하기 \
+    /// 서비스 약관 동의 내역 조회 \
     /// Retrieve consent details for service terms
     /// - parameters:
     ///   - result: 조회 대상(`agreed_service_terms`: 사용자가 동의한 서비스 약관 목록 | `app_service_terms`: 앱에 사용 설정된 서비스 약관 목록, 기본값: `agreed_service_terms`) \
@@ -275,7 +275,7 @@ extension Reactive where Base: UserApi {
             .asSingle()
     }
     
-    /// 서비스 약관 동의 철회하기 \
+    /// 서비스 약관 동의 철회 \
     /// Revoke consent for service terms
     /// - parameters:
     ///   - tags: 서비스 약관 태그 목록 \
@@ -290,7 +290,7 @@ extension Reactive where Base: UserApi {
             .asSingle()
     }
     
-    /// 동의 내역 확인하기 \
+    /// 동의항목 동의 내역 조회 \
     /// Retrieve consent details
     /// - parameters:
     ///   - scopes: 동의 항목 ID 목록 \
@@ -305,7 +305,7 @@ extension Reactive where Base: UserApi {
             .asSingle()
     }
     
-    /// 동의 철회하기 \
+    /// 동의항목 동의 철회 \
     /// Revoke consent
     /// - parameters:
     ///   - scopes: 동의 항목 ID 목록 \
@@ -320,7 +320,7 @@ extension Reactive where Base: UserApi {
             .asSingle()
     }
     
-    /// 배송지 선택하기 \
+    /// 배송지 선택 \
     /// Select shipping address
     public func selectShippingAddress() -> Single<Int64> {
         return Observable<Int64>.create { observer in

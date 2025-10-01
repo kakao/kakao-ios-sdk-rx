@@ -24,8 +24,8 @@ import KakaoSDKTemplate
 
 extension ShareApi: ReactiveCompatible {}
 
-/// [카카오톡 공유](https://developers.kakao.com/docs/latest/ko/message/common) API 클래스 \
-/// Class for the [Kakao Talk Sharing](https://developers.kakao.com/docs/latest/en/message/common) APIs
+/// [카카오톡 공유](https://developers.kakao.com/docs/latest/ko/kakaotalk-share/common) API 클래스 \
+/// Class for the [Kakao Talk Sharing](https://developers.kakao.com/docs/latest/en/kakaotalk-share/common) APIs
 extension Reactive where Base: ShareApi {
     
     // MARK: Fields
@@ -78,7 +78,7 @@ extension Reactive where Base: ShareApi {
     
     // MARK: Using KakaoTalk
     
-    /// 기본 템플릿으로 메시지 보내기 \
+    /// 기본 템플릿으로 메시지 발송 \
     /// Send message with default template
     /// - parameters:
     ///   - templateObjectJsonString: 기본 템플릿 객체를 JSON 형식으로 변환한 문자열 \
@@ -107,7 +107,7 @@ extension Reactive where Base: ShareApi {
             .asSingle()
     }
     
-    /// 기본 템플릿으로 메시지 보내기 \
+    /// 기본 템플릿으로 메시지 발송 \
     /// Send message with default template
     /// - parameters:
     ///   - templatable: 기본 템플릿으로 변환 가능한 객체 \
@@ -121,7 +121,7 @@ extension Reactive where Base: ShareApi {
         return self.shareDefault(templateObjectJsonString: templatable.toJsonObject()?.toJsonString(), serverCallbackArgs:serverCallbackArgs)
     }
     
-    /// 기본 템플릿으로 메시지 보내기 \
+    /// 기본 템플릿으로 메시지 발송 \
     /// Send message with default template
     /// - parameters:
     ///   - templateObject: 기본 템플릿 객체 \
@@ -134,7 +134,7 @@ extension Reactive where Base: ShareApi {
         return self.shareDefault(templateObjectJsonString: templateObject.toJsonString(), serverCallbackArgs:serverCallbackArgs)
     }
     
-    /// 스크랩 메시지 보내기 \
+    /// 스크랩 메시지 발송 \
     /// Send scrape message
     ///  - parameters:
     ///    - requestUrl: 스크랩할 URL \
@@ -171,7 +171,7 @@ extension Reactive where Base: ShareApi {
             .asSingle()
     }
     
-    /// 사용자 정의 템플릿으로 메시지 보내기 \
+    /// 사용자 정의 템플릿으로 메시지 발송 \
     /// Send message with custom template
     /// - parameters:
     ///   - templateId: 사용자 정의 템플릿 ID \
@@ -207,7 +207,7 @@ extension Reactive where Base: ShareApi {
  
     // MARK: Image Upload
     
-    /// 이미지 업로드하기 \
+    /// 이미지 업로드 \
     /// Upload image
     /// - parameters:
     ///   - image: 이미지 파일 \
@@ -228,7 +228,7 @@ extension Reactive where Base: ShareApi {
             .asSingle()
     }
     
-    /// 이미지 스크랩하기 \
+    /// 이미지 스크랩 \
     /// Scrape image
     /// - parameters:
     ///   - imageUrl: 이미지 URL \

@@ -112,7 +112,7 @@ extension Reactive where Base: CertApi  {
             })
     }
     
-    /// 세션 정보 가져오기 \
+    /// 세션 정보 조회 \
     /// Retrieve session infomation
     public func sessionInfo(certType:CertType, txId: String) -> Single<SessionInfo> {
         return Observable<SessionInfo>.create { observer in
@@ -135,7 +135,7 @@ extension Reactive where Base: CertApi  {
         .asSingle()
     }
     
-    /// 축약서명하기 \
+    /// 축약서명 \
     /// Sign for abbreviated signature
     public func reducedSign(certType:CertType, data:String) -> Single<String> {
         return Observable<String>.create { observer in
@@ -161,7 +161,7 @@ extension Reactive where Base: CertApi  {
 
 //k3220
 extension Reactive where Base: CertApi  {
-    /// 세션 정보 가져오기 \
+    /// 세션 정보 조회 \
     /// Retrieve session infomation
     public func sessionInfoByAppKey(certType:CertType,
                                     txId: String,
@@ -186,7 +186,7 @@ extension Reactive where Base: CertApi  {
         .asSingle()
     }
     
-    /// 사용자 서명 요청하기 \
+    /// 사용자 서명 요청 \
     /// Request user signature
     public func signWithKakaoTalk(certType:CertType,
                                   txId:String,
