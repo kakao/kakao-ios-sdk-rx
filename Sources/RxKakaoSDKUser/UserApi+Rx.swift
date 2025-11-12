@@ -104,6 +104,29 @@ extension Reactive where Base: UserApi {
                                                                             serviceTerms: serviceTerms,
                                                                             nonce: nonce)
     }
+    
+    /// 카카오 로그인 방법 선택 \
+    /// Select Kakao Login method
+    public func loginWithKakao(_ properties: BridgeConfiguration = BridgeConfiguration(),
+                               loginProperties: LoginConfiguration = LoginConfiguration()) -> Observable<OAuthToken> {
+        Observable<OAuthToken>.create { observer in
+            UserApi.shared.loginWithKakao(properties, loginProperties: loginProperties) { token, error in
+                if let error {
+                    observer.onError(error)
+                    return
+                }
+                
+                if let token {
+                    observer.onNext(token)
+                    return
+                }
+                
+                return observer.onError(SdkError())
+            }
+            
+            return Disposables.create()
+        }
+    }
 }
 
 // MARK: Other APIs
