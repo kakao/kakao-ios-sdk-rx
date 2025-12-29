@@ -12,7 +12,6 @@ RxSwift를 사용하는 카카오 SDK 공통 모듈입니다. 초기화 메서�
 - KakaoSDKCommon
 - RxSwift
 - RxCocoa
-- RxAlamofire
 
 ## Installation
 ```

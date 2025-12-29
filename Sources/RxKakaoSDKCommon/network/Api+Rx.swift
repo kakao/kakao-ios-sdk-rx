@@ -17,7 +17,6 @@ import UIKit
 import RxSwift
 import RxCocoa
 
-import RxAlamofire
 import KakaoSDKCommon
 
 #if swift(>=5.8)
@@ -78,23 +77,43 @@ extension Reactive where Base: Api {
                       _ url: String,
                       parameters: [String: Any]? = nil,
                       headers: [String: String]? = nil,
-                      sessionType: SessionType = .RxAuthApi) -> Observable<(HTTPURLResponse, Data)> {        
-        return API.session(sessionType)
-            .rx
-            .responseData(Api.httpMethod(kHTTPMethod), url, parameters: parameters, encoding:API.encoding, headers: Api.httpHeaders(headers))
-            .do (
-                onNext: {
-                    let json = (try? JSONSerialization.jsonObject(with:$1, options:[])) as? [String: Any]
-                    SdkLog.d("===================================================================================================")
-                    SdkLog.i("request: \n method: \(Api.httpMethod(kHTTPMethod))\n url:\(url)\n headers:\(String(describing: headers))\n parameters: \(String(describing: parameters)) \n\n")
-                    SdkLog.i("response:\n \(String(describing: json))\n\n" )
-                },
-                onError: {
-                    SdkLog.e("error: \($0)\n\n")
-                    },
-                onCompleted: {
-                    SdkLog.d("== completed\n\n")
-        })
+                      sessionType: SessionType = .RxAuthApi) -> Observable<(HTTPURLResponse, Data)> {
+        return Observable.create { observer in
+            let request = API.session(sessionType)
+                .request(url, method: Api.httpMethod(kHTTPMethod), parameters: parameters, encoding: API.encoding, headers: Api.httpHeaders(headers))
+                .responseData { response in
+                    switch response.result {
+                    case .success(let data):
+                        if let httpResponse = response.response {
+                            observer.onNext((httpResponse, data))
+                            observer.onCompleted()
+                            return
+                        }
+                        
+                        observer.onError(SdkError(reason: .Unknown, message: "response is nil."))
+                    case .failure(let error):
+                        observer.onError(error)
+                    }
+                }
+            
+            return Disposables.create {
+                request.cancel()
+            }
+        }
+        .do (
+            onNext: {
+                let json = (try? JSONSerialization.jsonObject(with:$1, options:[])) as? [String: Any]
+                SdkLog.d("===================================================================================================")
+                SdkLog.i("request: \n method: \(Api.httpMethod(kHTTPMethod))\n url:\(url)\n headers:\(String(describing: headers))\n parameters: \(String(describing: parameters)) \n\n")
+                SdkLog.i("response:\n \(String(describing: json))\n\n" )
+            },
+            onError: {
+                SdkLog.e("error: \($0)\n\n")
+            },
+            onCompleted: {
+                SdkLog.d("== completed\n\n")
+            }
+        )
     }
     
     public func upload(_ kHTTPMethod: KHTTPMethod,
@@ -107,7 +126,7 @@ extension Reactive where Base: Api {
                        sessionType: SessionType = .RxAuthApi) -> Observable<(HTTPURLResponse, Data)> {
 
         return Observable<(HTTPURLResponse, Data)>.create { observer in
-            API.session(sessionType)
+            let request = API.session(sessionType)
                 .upload(multipartFormData: { (formData) in
                     images.forEach({ (image) in
                         if let imageData = image?.pngData() {
@@ -148,7 +167,9 @@ extension Reactive where Base: Api {
                     }
                 }
             
-            return Disposables.create()
+            return Disposables.create {
+                request.cancel()
+            }
         }
     }
 }

@@ -118,6 +118,7 @@ extension Reactive where Base: UserApi {
                 
                 if let token {
                     observer.onNext(token)
+                    observer.onCompleted()
                     return
                 }
                 
