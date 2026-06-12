@@ -32,9 +32,9 @@ extension Reactive where Base: PickerApi  {
     /// Friends picker
     /// ## SeeAlso
     /// - [`OpenPickerFriendRequestParams`](https://developers.kakao.com/sdk/reference/ios/release/KakaoSDKFriendCore/documentation/kakaosdkfriendcore/openpickerfriendrequestparams)
-    public func selectFriend(params:OpenPickerFriendRequestParams, viewType: ViewType, enableMulti: Bool = true) -> Observable<SelectedUsers> {
+    public func selectFriend(params:OpenPickerFriendRequestParams, viewType: ViewType) -> Observable<SelectedUsers> {
         return Observable<SelectedUsers>.create { observer in
-            PickerApi.shared.selectFriend(params: params, viewType: viewType, enableMulti: enableMulti) { (selectedUsers, error) in
+            PickerApi.shared.selectFriend(params: params, viewType: viewType) { (selectedUsers, error) in
                 if let error = error {
                     observer.onError(error)
                 }
@@ -51,4 +51,3 @@ extension Reactive where Base: PickerApi  {
         }
     }
 }
-
