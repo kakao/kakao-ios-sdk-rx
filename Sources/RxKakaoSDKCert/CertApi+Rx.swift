@@ -24,9 +24,7 @@ import RxKakaoSDKAuth
 
 import KakaoSDKCert
 
-#if swift(>=5.8)
 @_documentation(visibility: private)
-#endif
 @_exported import KakaoSDKCertCore
 
 extension CertApi: ReactiveCompatible {}

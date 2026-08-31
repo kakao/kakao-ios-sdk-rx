@@ -22,15 +22,11 @@ import RxKakaoSDKCommon
 
 import KakaoSDKAuth
 
-#if swift(>=5.8)
 @_documentation(visibility: private)
-#endif
 @available(iOSApplicationExtension, unavailable)
 extension AuthApiCommon: ReactiveCompatible {}
 
-#if swift(>=5.8)
 @_documentation(visibility: private)
-#endif
 /// 내부 Rx전용 extension 입니다.
 @available(iOSApplicationExtension, unavailable)
 extension Reactive where Base: AuthApiCommon {        
@@ -47,8 +43,13 @@ extension Reactive where Base: AuthApiCommon {
             return observable
                 .retry(when: {(observableError) -> Observable<OAuthToken> in
                     return observableError
-                        .take(Auth.retryTokenRefreshCount)
-                        .flatMap { (error) -> Observable<OAuthToken> in
+                        .enumerated()
+                        .observe(on: SerialDispatchQueueScheduler(qos: .utility))
+                        .flatMap { (index, error) -> Observable<OAuthToken> in
+                            guard AuthApiCommon.rx.isRetryableCount(current: index, maxCount: Auth.retryTokenRefreshCount) else {
+                                throw error
+                            }
+                            
                             var logString = "retrywhen:"
                             
                             guard error is SdkError else { throw error }
@@ -63,10 +64,19 @@ extension Reactive where Base: AuthApiCommon {
                             case .InvalidAccessToken:
                                 
                                 logString = "\(logString)\n reason:\(error)\n token: \(String(describing: AUTH.tokenManager.getToken()))"
-                                
+
+                                guard sdkError.getApiError().info?.reason == .refresh else {
+                                    SdkLog.e("\(logString)\n recoveryAction is not refresh -> pass through next\n\n")
+                                    throw sdkError
+                                }
+
                                 if AUTH.tokenManager.getToken()?.refreshToken != nil {
                                     SdkLog.e("request token refresh. \n\n")
-                                    return AuthApi.shared.rx.refreshToken().asObservable()
+                                    let retryDelay = AuthRequestRetrier.calculateDelay(for: index, maxCount: Auth.retryTokenRefreshCount)
+                                    return Observable<Int>.timer(.seconds(Int(retryDelay)), scheduler: SerialDispatchQueueScheduler(qos: .utility))
+                                        .flatMap { _ in
+                                            return AuthApi.shared.rx.refreshToken().asObservable()
+                                        }
                                 }
                                 else {
                                     SdkLog.e("\(logString)\n token is nil -> pass through next\n\n")
@@ -119,5 +129,9 @@ extension Reactive where Base: AuthApiCommon {
                        images: [UIImage?] = [],
                        headers: [String: String]? = nil) -> Observable<(HTTPURLResponse, Data)> {
         return API.rx.upload(kHTTPMethod, url, images:images, headers: headers)
+    }
+
+    public static func isRetryableCount(current: Int, maxCount: Int) -> Bool {
+        return current < maxCount
     }
 }

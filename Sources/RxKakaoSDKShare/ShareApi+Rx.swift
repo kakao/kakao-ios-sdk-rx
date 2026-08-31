@@ -30,9 +30,7 @@ extension Reactive where Base: ShareApi {
     
     // MARK: Fields
     
-#if swift(>=5.8)
 @_documentation(visibility: private)
-#endif
     /// 템플릿 조회 API 응답을 카카오톡 공유 URL로 변환합니다.
     /// ## SeeAlso
     /// - ``SharingResult``
