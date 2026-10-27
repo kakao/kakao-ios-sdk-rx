@@ -1,7 +1,7 @@
 // swift-tools-version:5.8
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
-// sdk-version:2.29.0
+// sdk-version:2.30.0
 import PackageDescription
 
 let openSdkPackageName = "kakao-ios-sdk"
@@ -40,7 +40,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/kakao/kakao-ios-sdk.git",
-                 exact: "2.29.0"),
+                 exact: "2.30.0"),
         .package(url: "https://github.com/ReactiveX/RxSwift.git",
                  Version(6,0,0)..<Version(7,0,0))
     ],

@@ -242,31 +242,11 @@ extension Reactive where Base: UserApi {
     /// 배송지 조회 \
     /// Retrieve shipping address
     /// - parameters:
-    ///   - fromUpdatedAt: 이전 페이지의 마지막 배송지 수정 시각, `0` 전달 시 처음부터 조회 \
-    ///                    Last shipping address modification on the previous page, retrieve from beginning if passing `0`
-    ///   - pageSize: 한 페이지에 포함할 배송지 수(기본값: 10) \
-    ///               Number of shipping addresses displayed on a page (Default: 10)
+    ///   - addressId : 조회할 배송지 ID, 생략 시 기본 배송지 조회 \
+    ///                Shipping address ID to retrieve, if omitted, the default shipping address is retrieved
     /// ## SeeAlso
-    /// - ``UserShippingAddresses``
-    public func shippingAddresses(fromUpdatedAt: Date? = nil, pageSize: Int? = nil) -> Single<UserShippingAddresses> {
-        return AUTH_API.rx.responseData(.get, Urls.compose(path:Paths.userShippingAddress),
-                                    parameters: ["from_updated_at": fromUpdatedAt?.toSeconds(), "page_size": pageSize].filterNil())
-            .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())
-            .map({ (response, data) -> (SdkJSONDecoder, HTTPURLResponse, Data) in
-                return (SdkJSONDecoder.customSecondsSince1970, response, data)
-            })
-            .compose(API.rx.decodeDataComposeTransformer())
-            .asSingle()
-    }
-    
-    /// 배송지 조회 \
-    /// Retrieve shipping address
-    /// - parameters:
-    ///   - addressId : 배송지 ID \
-    ///                Shipping address ID
-    /// ## SeeAlso
-    /// - ``UserShippingAddresses``
-    public func shippingAddresses(addressId: Int64) -> Single<UserShippingAddresses> {
+    /// - ``UserShippingAddress``
+    public func shippingAddress(addressId: Int64? = nil) -> Single<UserShippingAddress> {
         return AUTH_API.rx.responseData(.get, Urls.compose(path:Paths.userShippingAddress),
                                  parameters: ["address_id": addressId].filterNil())
             .compose(AUTH_API.rx.checkErrorAndRetryComposeTransformer())

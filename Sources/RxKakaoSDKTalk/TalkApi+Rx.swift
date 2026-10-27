@@ -267,18 +267,13 @@ extension Reactive where Base: TalkApi {
     ///                       Kakao Talk Channel profile ID
     public func addChannel(channelPublicId: String) -> Completable {
         return Observable.from {
-            if !TalkApi.isKakaoTalkChannelAvailable(path: "plusfriend/home/\(channelPublicId)/add") {
-                throw SdkError(reason: .IllegalState, message: "KakaoTalk is not available")
-            }
             return validateChannel(validatePathUri: "/sdk/channel/add", channelPublicId: channelPublicId)
         }
         .ignoreElements()
         .asCompletable()
-        .do(onCompleted: {
-            UIApplication.shared.open(URL(string: Urls.compose(.PlusFriend, path: "plusfriend/home/\(channelPublicId)/add"))!)
-        })
+        .andThen(openTalkChannel(path: TalkApi._makeAddChannelPath(channelPublicId: channelPublicId)))
     }
-    
+
     /// 카카오톡 채널 채팅 \
     /// Start Kakao Talk Channel chat
     /// - parameters:
@@ -286,17 +281,25 @@ extension Reactive where Base: TalkApi {
     ///                       Kakao Talk Channel profile ID
     public func chatChannel(channelPublicId: String) -> Completable {
         return Observable.from {
-            if !TalkApi.isKakaoTalkChannelAvailable(path: "plusfriend/talk/chat/\(channelPublicId)") {
-                throw SdkError(reason: .IllegalState, message: "KakaoTalk is not available")
-            }
-            
             return validateChannel(validatePathUri: "/sdk/channel/chat", channelPublicId: channelPublicId)
         }
         .ignoreElements()
         .asCompletable()
-        .do(onCompleted: {
-            UIApplication.shared.open(URL(string: Urls.compose(.PlusFriend, path: "plusfriend/talk/chat/\(channelPublicId)"))!)
-        })
+        .andThen(openTalkChannel(path: "plusfriend/talk/chat/\(channelPublicId)"))
+    }
+
+    private func openTalkChannel(path: String) -> Completable {
+        return Completable.create { observer in
+            TalkApi.openTalkChannel(path: path) { (error) in
+                if let error = error {
+                    observer(.error(error))
+                }
+                else {
+                    observer(.completed)
+                }
+            }
+            return Disposables.create()
+        }
     }
     
     /// 카카오톡 채널 간편 추가 \

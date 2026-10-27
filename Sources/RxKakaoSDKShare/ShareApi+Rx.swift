@@ -34,13 +34,27 @@ extension Reactive where Base: ShareApi {
     /// 템플릿 조회 API 응답을 카카오톡 공유 URL로 변환합니다.
     /// ## SeeAlso
     /// - ``SharingResult``
-    public func createSharingResultComposeTransformer(targetAppKey:String? = nil) -> ComposeTransformer<(ValidationResult, [String:Any]?), SharingResult> {
+    /// - Note: pickerExtras 인수는 호환성을 위해 유지하며, 스킴에는 검증 응답의 picker_extras를 사용합니다.
+    public func createSharingResultComposeTransformer(targetAppKey:String? = nil, pickerExtras: PickerExtras? = nil) -> ComposeTransformer<(ValidationResult, [String:Any]?), SharingResult> {
         return ComposeTransformer<(ValidationResult, [String:Any]?), SharingResult> { (observable) in
             
             return observable.flatMap { (validationResult, serverCallbackArgs) -> Observable<SharingResult> in
                 SdkLog.d("--------------------------------- validationResult \(validationResult)")
                 
                 return Observable<SharingResult>.create { (observer) in
+                    let pickerExtrasJson: String?
+                    do {
+                        if let pickerExtras = validationResult.pickerExtras {
+                            let encoded = try JSONSerialization.data(withJSONObject: pickerExtras)
+                            pickerExtrasJson = String(decoding: encoded, as: UTF8.self)
+                        } else {
+                            pickerExtrasJson = nil
+                        }
+                    } catch {
+                        observer.onError(error)
+                        return Disposables.create()
+                    }
+
                     let extraParameters = ["KA":Constants.kaHeader,
                                            "iosBundleId":Bundle.main.bundleIdentifier,
                                            "lcba":serverCallbackArgs?.toJsonString()
@@ -53,8 +67,7 @@ extension Reactive where Base: ShareApi {
                                           "template_id" : validationResult.templateId,
                                           "template_args" : validationResult.templateArgs?.toJsonString(),
                                           "extras" : extraParameters?.toJsonString(),
-                                          "list": validationResult.schemeParams?["list"],
-                                          "limit": validationResult.schemeParams?["limit"]
+                                          "picker_extras" : pickerExtrasJson,
                         ].filterNil()
                     
                     if let url = SdkUtils.makeUrlWithParameters(Urls.compose(.TalkLink, path:Paths.talkLink), parameters: linkParameters) {
@@ -85,19 +98,21 @@ extension Reactive where Base: ShareApi {
     ///                               String converted in JSON format from a default template
     ///   - serverCallbackArgs: 카카오톡 공유 전송 성공 알림에 포함할 키와 값 \
     ///                          Keys and values for the Kakao Talk Sharing success callback
-    ///   - shareType: 카카오톡 공유 대상 선택 화면 유형 \
-    ///                Type of share target selection screen in Kakao Talk.
-    ///   - limit: 공유할 대상의 최대 선택 개수 \
-    ///            Maximum number of share targets that can be selected.
+    ///   - pickerExtras: 공유 대상 선택 화면의 추가 설정
     func shareDefault(templateObjectJsonString:String?,
-                      shareType: ShareType? = nil,
-                      limit: Int? = nil,
-                      serverCallbackArgs:[String:String]? = nil ) -> Single<SharingResult> {
+                      serverCallbackArgs:[String:String]? = nil,
+                      pickerExtras: PickerExtras? = nil ) -> Single<SharingResult> {
+        let pickerExtrasJson: String?
+        do {
+            pickerExtrasJson = try pickerExtras?.toRequestJsonString()
+        } catch {
+            return .error(error)
+        }
         return API.rx.responseData(.post,
                                    Urls.compose(path:Paths.shareDefalutValidate),
                                    parameters: ["link_ver":"4.0",
-                                                "template_object":templateObjectJsonString,
-                                                "scheme_params": ShareApi._createSchemeParams(list: shareType, limit: limit)].filterNil(),
+                                                "picker_extras":pickerExtrasJson,
+                                                "template_object":templateObjectJsonString].filterNil(),
                                    headers: ["Authorization":"KakaoAK \(try! KakaoSDK.shared.appKey())"],
                                    sessionType: .Api
             )
@@ -121,18 +136,14 @@ extension Reactive where Base: ShareApi {
     ///                  Object to convert to a default template
     ///   - serverCallbackArgs: 카카오톡 공유 전송 성공 알림에 포함할 키와 값 \
     ///                         Keys and values for the Kakao Talk Sharing success callback
-    ///   - shareType: 카카오톡 공유 대상 선택 화면 유형 \
-    ///                Type of share target selection screen in Kakao Talk.
-    ///   - limit: 공유할 대상의 최대 선택 개수 \
-    ///            Maximum number of share targets that can be selected.
+    ///   - pickerExtras: 공유 대상 선택 화면의 추가 설정
     /// ## SeeAlso
     /// - ``Template``
     /// - ``SharingResult``
     public func shareDefault(templatable: Templatable,
-                             shareType: ShareType? = nil,
-                             limit: Int? = nil,
-                             serverCallbackArgs:[String:String]? = nil ) -> Single<SharingResult> {
-        return self.shareDefault(templateObjectJsonString: templatable.toJsonObject()?.toJsonString(), shareType: shareType, limit: limit, serverCallbackArgs:serverCallbackArgs)
+                             serverCallbackArgs:[String:String]? = nil,
+                             pickerExtras: PickerExtras? = nil ) -> Single<SharingResult> {
+        return self.shareDefault(templateObjectJsonString: templatable.toJsonObject()?.toJsonString(), serverCallbackArgs:serverCallbackArgs, pickerExtras: pickerExtras)
     }
     
     /// 기본 템플릿으로 메시지 발송 \
@@ -142,17 +153,13 @@ extension Reactive where Base: ShareApi {
     ///                     Default template object
     ///   - serverCallbackArgs: 카카오톡 공유 전송 성공 알림에 포함할 키와 값 \
     ///                         Keys and values for the Kakao Talk Sharing success callback
-    ///   - shareType: 카카오톡 공유 대상 선택 화면 유형 \
-    ///                Type of share target selection screen in Kakao Talk.
-    ///   - limit: 공유할 대상의 최대 선택 개수 \
-    ///            Maximum number of share targets that can be selected.
+    ///   - pickerExtras: 공유 대상 선택 화면의 추가 설정
     /// ## SeeAlso
     /// - ``SharingResult``
     public func shareDefault(templateObject:[String:Any],
-                             shareType: ShareType? = nil,
-                             limit: Int? = nil,
-                             serverCallbackArgs:[String:String]? = nil ) -> Single<SharingResult> {
-        return self.shareDefault(templateObjectJsonString: templateObject.toJsonString(), shareType: shareType, limit: limit,serverCallbackArgs:serverCallbackArgs)
+                             serverCallbackArgs:[String:String]? = nil,
+                             pickerExtras: PickerExtras? = nil ) -> Single<SharingResult> {
+        return self.shareDefault(templateObjectJsonString: templateObject.toJsonString(), serverCallbackArgs:serverCallbackArgs, pickerExtras: pickerExtras)
     }
     
     /// 스크랩 메시지 발송 \
@@ -166,25 +173,27 @@ extension Reactive where Base: ShareApi {
     ///                    Keys and values of the user argument
     ///    - serverCallbackArgs: 카카오톡 공유 전송 성공 알림에 포함할 키와 값 \
     ///                          Keys and values for the Kakao Talk Sharing success callback
-    ///    - shareType: 카카오톡 공유 대상 선택 화면 유형 \
-    ///                 Type of share target selection screen in Kakao Talk.
-    ///    - limit: 공유할 대상의 최대 선택 개수 \
-    ///             Maximum number of share targets that can be selected.
+    ///   - pickerExtras: 공유 대상 선택 화면의 추가 설정
     /// ## SeeAlso
     /// - ``SharingResult``
     public func shareScrap(requestUrl:String,
-                           shareType: ShareType? = nil,
-                           limit: Int? = nil,
                            templateId:Int64? = nil,
                            templateArgs:[String:String]? = nil,
-                           serverCallbackArgs:[String:String]? = nil ) -> Single<SharingResult> {
+                           serverCallbackArgs:[String:String]? = nil,
+                           pickerExtras: PickerExtras? = nil ) -> Single<SharingResult> {
+        let pickerExtrasJson: String?
+        do {
+            pickerExtrasJson = try pickerExtras?.toRequestJsonString()
+        } catch {
+            return .error(error)
+        }
         return API.rx.responseData(.post,
                                 Urls.compose(path:Paths.shareScrapValidate),
                                 parameters: ["link_ver":"4.0",
+                                             "picker_extras":pickerExtrasJson,
                                              "request_url":requestUrl,
                                              "template_id":templateId,
-                                             "template_args":templateArgs?.toJsonString(),
-                                             "scheme_params": ShareApi._createSchemeParams(list: shareType, limit: limit) ].filterNil(),
+                                             "template_args":templateArgs?.toJsonString() ].filterNil(),
                                 headers: ["Authorization":"KakaoAK \(try! KakaoSDK.shared.appKey())"],
                                 sessionType: .Api
             )
@@ -210,23 +219,25 @@ extension Reactive where Base: ShareApi {
     ///                   Keys and values of the user argument
     ///   - serverCallbackArgs: 카카오톡 공유 전송 성공 알림에 포함할 키와 값 \
     ///                         Keys and values for the Kakao Talk Sharing success callback
-    ///   - shareType: 카카오톡 공유 대상 선택 화면 유형 \
-    ///                Type of share target selection screen in Kakao Talk.
-    ///   - limit: 공유할 대상의 최대 선택 개수 \
-    ///            Maximum number of share targets that can be selected.
+    ///   - pickerExtras: 공유 대상 선택 화면의 추가 설정
     /// ## SeeAlso
     /// - ``SharingResult``
     public func shareCustom(templateId:Int64,
-                            shareType: ShareType? = nil,
-                            limit: Int? = nil,
                             templateArgs:[String:String]? = nil,
-                            serverCallbackArgs:[String:String]? = nil) -> Single<SharingResult> {
+                            serverCallbackArgs:[String:String]? = nil,
+                            pickerExtras: PickerExtras? = nil) -> Single<SharingResult> {
+        let pickerExtrasJson: String?
+        do {
+            pickerExtrasJson = try pickerExtras?.toRequestJsonString()
+        } catch {
+            return .error(error)
+        }
         return API.rx.responseData(.post,
                                 Urls.compose(path:Paths.shareCustomValidate),
                                 parameters: ["link_ver":"4.0",
+                                             "picker_extras":pickerExtrasJson,
                                              "template_id":templateId,
-                                             "template_args":templateArgs?.toJsonString(),
-                                             "scheme_params": ShareApi._createSchemeParams(list: shareType, limit: limit) ]
+                                             "template_args":templateArgs?.toJsonString() ]
                                     .filterNil(),
                                 headers: ["Authorization":"KakaoAK \(try! KakaoSDK.shared.appKey())"],
                                 sessionType: .Api
@@ -285,5 +296,50 @@ extension Reactive where Base: ShareApi {
             })
             .compose(API.rx.decodeDataComposeTransformer())
             .asSingle()
+    }
+}
+
+extension Reactive where Base: ShareApi {
+    @available(*, deprecated, message: "use shareDefault with pickerExtras instead")
+    func shareDefault(templateObjectJsonString:String?,
+                      shareType: ShareType? = nil,
+                      limit: Int? = nil,
+                      serverCallbackArgs:[String:String]? = nil ) -> Single<SharingResult> {
+        return self.shareDefault(templateObjectJsonString: templateObjectJsonString, serverCallbackArgs: serverCallbackArgs, pickerExtras: PickerExtras(type: shareType?.rawValue, limit: limit))
+    }
+
+    @available(*, deprecated, message: "use shareDefault with pickerExtras instead")
+    public func shareDefault(templatable: Templatable,
+                             shareType: ShareType? = nil,
+                             limit: Int? = nil,
+                             serverCallbackArgs:[String:String]? = nil ) -> Single<SharingResult> {
+        return self.shareDefault(templatable: templatable, serverCallbackArgs: serverCallbackArgs, pickerExtras: PickerExtras(type: shareType?.rawValue, limit: limit))
+    }
+
+    @available(*, deprecated, message: "use shareDefault with pickerExtras instead")
+    public func shareDefault(templateObject:[String:Any],
+                             shareType: ShareType? = nil,
+                             limit: Int? = nil,
+                             serverCallbackArgs:[String:String]? = nil ) -> Single<SharingResult> {
+        return self.shareDefault(templateObject: templateObject, serverCallbackArgs: serverCallbackArgs, pickerExtras: PickerExtras(type: shareType?.rawValue, limit: limit))
+    }
+
+    @available(*, deprecated, message: "use shareScrap with pickerExtras instead")
+    public func shareScrap(requestUrl:String,
+                           shareType: ShareType? = nil,
+                           limit: Int? = nil,
+                           templateId:Int64? = nil,
+                           templateArgs:[String:String]? = nil,
+                           serverCallbackArgs:[String:String]? = nil ) -> Single<SharingResult> {
+        return self.shareScrap(requestUrl: requestUrl, templateId: templateId, templateArgs: templateArgs, serverCallbackArgs: serverCallbackArgs, pickerExtras: PickerExtras(type: shareType?.rawValue, limit: limit))
+    }
+
+    @available(*, deprecated, message: "use shareCustom with pickerExtras instead")
+    public func shareCustom(templateId:Int64,
+                            shareType: ShareType? = nil,
+                            limit: Int? = nil,
+                            templateArgs:[String:String]? = nil,
+                            serverCallbackArgs:[String:String]? = nil) -> Single<SharingResult> {
+        return self.shareCustom(templateId: templateId, templateArgs: templateArgs, serverCallbackArgs: serverCallbackArgs, pickerExtras: PickerExtras(type: shareType?.rawValue, limit: limit))
     }
 }
